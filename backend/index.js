@@ -4,6 +4,7 @@ import express, { urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import { DbConnection } from "./config/dbConnection.js";
 import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { auth } from "googleapis/build/src/apis/abusiveexperiencereport/index.js";
 const app = express();
 const PORT = 3000;
@@ -16,7 +17,10 @@ app.use(express.json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Routes
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });

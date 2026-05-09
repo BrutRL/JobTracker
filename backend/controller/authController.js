@@ -2,6 +2,9 @@ import dotenv from "dotenv";
 dotenv.config();
 import { User } from "../model/userModel.js";
 import { google } from "googleapis";
+import fs from "fs";
+import path from "path";
+import fetch from "node-fetch";
 import { transporter } from "../middleware/nodemailer.js";
 import crypto from "crypto";
 import getOauthClient from "../config/googleClient.js";
@@ -46,27 +49,28 @@ export const googleRegisterCallback = async (req, res) => {
     const oauth2 = google.oauth2({ version: "v2", auth: client });
     const { data } = await oauth2.userinfo.get();
 
-    // check if already registered
     const existing = await User.findOne({ email: data.email });
     if (existing) {
-      // return res.redirect(
-      //   `${process.env.FRONT_END_URL}/login?error=already_registered`,
-      // );
-      return res.send(`Already register`);
+      return res.send("Already registered");
     }
 
-    // password is required in your schema so generate a random one
+    // download google avatar and save to ./public/avatar
+    const avatarResponse = await fetch(data.picture);
+    const arrayBuffer = await avatarResponse.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const filename = `${Date.now()}-${data.id}.jpg`;
+    const avatarPath = path.join("public", "avatar", filename);
+    fs.writeFileSync(avatarPath, buffer);
+
     const randomPassword = crypto.randomBytes(32).toString("hex");
 
-    const user = await User.create({
+    await User.create({
       name: data.name,
       email: data.email,
-      avatar: data.picture,
+      avatar: filename,
       password: randomPassword,
     });
 
-    // const token = signToken(user);
-    // res.cookie("token", token);
     res.redirect(`${process.env.FRONT_END_URL}/google_login_success`);
   } catch (error) {
     console.error(error);

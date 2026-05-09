@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { User } from "../model/userModel.js";
 import { google } from "googleapis";
+import { transporter } from "../middleware/nodemailer.js";
 import crypto from "crypto";
 import getOauthClient from "../config/googleClient.js";
 import bcrypt from "bcrypt";
@@ -23,7 +24,6 @@ export const register = async (req, res) => {
     res.status(400).json({ ok: false, error: error.message });
   }
 };
-
 export const googleRegisterRedirect = (req, res) => {
   const client = getOauthClient("register");
   const url = client.generateAuthUrl({
@@ -40,7 +40,6 @@ export const googleRegisterCallback = async (req, res) => {
   try {
     const { code } = req.query;
     const client = getOauthClient("register");
-
     const { tokens } = await client.getToken(code);
     client.setCredentials(tokens);
 
@@ -75,8 +74,6 @@ export const googleRegisterCallback = async (req, res) => {
   }
 };
 
-// ─── GOOGLE LOGIN ─────────────────────────────────────
-
 export const googleLoginRedirect = (req, res) => {
   const client = getOauthClient("login");
   const url = client.generateAuthUrl({
@@ -104,9 +101,23 @@ export const googleLoginCallback = async (req, res) => {
     if (!user) {
       return res.redirect(`${process.env.FRONT_END_URL}/google_failed`);
     }
-
-    const token = signToken(user);
-    res.cookie("token", token);
+    const token = jwt.sign(
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "5h",
+      },
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 3 * 60 * 60 * 1000,
+    });
     res.redirect(`${process.env.FRONT_END_URL}/google_login_success`);
   } catch (error) {
     console.error(error);
@@ -118,8 +129,8 @@ export const googleLoginCallback = async (req, res) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = User.findOne({ email });
-    if (!email) {
+    const user = await User.findOne({ email });
+    if (!user) {
       return res.status(400).json({ ok: false, message: `User not found` });
     }
     const matchPass = await bcrypt.compare(password, user.password);
@@ -152,7 +163,86 @@ export const login = async (req, res) => {
     res.status(400).json({ ok: false, error: error.message });
   }
 };
+export const requestPasswordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ ok: false, message: "User not found" });
+    }
 
+    await transporter.sendMail({
+      from: `"JobQuest" <${process.env.EMAIL_USER}>`,
+      to: user.email,
+      subject: "Reset Your Password - JobQuest",
+      html: `
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0D1117; padding:20px;">
+          <tr>
+            <td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#161B22; padding:30px; border-radius:8px; font-family:Arial, sans-serif; color:#E6EDF3;">
+                <tr>
+                  <td align="center" style="padding-bottom:20px;">
+                    <h2 style="color:#F0A500; margin:0; font-family:monospace;">JobQuest</h2>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <p style="font-size:16px; margin:0 0 15px 0;">Hi <strong>${user.name}</strong>,</p>
+                    <p style="font-size:16px; margin:0 0 20px 0;">
+                      We received a request to reset your password. Click the button below to proceed:
+                    </p>
+                    <div style="text-align:center; margin:30px 0;">
+                      <a href="${process.env.CLIENT_URL}/reset-password?email=${user.email}?id=${user._id}"
+                         style="background-color:#F0A500; color:#0D1117; padding:12px 24px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block;">
+                        Reset My Password
+                      </a>
+                    </div>
+                    <p style="font-size:14px; color:#8B949E;">
+                      If you did not request this, ignore this email — your account is safe.
+                    </p>
+                    <hr style="border:none; border-top:1px solid #21262D; margin:30px 0;">
+                    <p style="font-size:14px; color:#8B949E; margin:0;">
+                      Best regards,<br>
+                      <strong style="color:#F0A500;">JobQuest Team</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      `,
+    });
+
+    res
+      .status(200)
+      .json({ ok: true, message: "Reset link sent to your email" });
+  } catch (error) {
+    res.status(500).json({ ok: false, error: error.message });
+  }
+};
+export const resetPassword = async (req, res) => {
+  const { id } = req.params;
+  const { password } = req.body;
+  try {
+    const hashPassword = await bcrypt.hash(password, 10);
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        password: hashPassword,
+      },
+      {
+        new: true,
+      },
+    );
+
+    res
+      .status(200)
+      .json({ ok: true, message: `Password updated successfully` });
+  } catch (error) {
+    res.status(400).json({ ok: false, error: error.message });
+  }
+};
 export const logout = async (req, res) => {
   try {
     res.clearCookie("token");

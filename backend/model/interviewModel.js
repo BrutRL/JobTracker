@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Application } from "./applicationModel.js";
+import { User } from "./userModel.js";
 const InterviewSchema = new mongoose.Schema(
   {
     applicationId: {
@@ -7,6 +8,11 @@ const InterviewSchema = new mongoose.Schema(
       ref: Application,
       required: [true, "Application is required"],
       index: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: User,
+      required: [true, "User id is required"],
     },
     round: {
       type: String,
@@ -20,10 +26,9 @@ const InterviewSchema = new mongoose.Schema(
     format: {
       type: String,
       enum: {
-        values: ["Phone", "Video", "Onsite", "Take-home", "Finalround"],
-        message: "{VALUE} is not a valid format",
+        values: ["phone", "behavioral", "technical", "final_round", "other"],
       },
-      default: null,
+      required: true,
     },
     notes: {
       type: String,
@@ -32,10 +37,10 @@ const InterviewSchema = new mongoose.Schema(
     outcome: {
       type: String,
       enum: {
-        values: ["Pending", "Passed", "Failed", "No show"],
+        values: ["pending", "passed", "rejected", "no_show"],
         message: "{VALUE} is not a valid outcome",
       },
-      default: "Pending",
+      default: "pending",
     },
   },
   { timestamps: true },

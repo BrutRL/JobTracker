@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Application } from "./applicationModel.js";
+import { User } from "./userModel.js";
 const ContactSchema = new mongoose.Schema(
   {
     applicationId: {
@@ -7,6 +8,11 @@ const ContactSchema = new mongoose.Schema(
       ref: Application,
       required: [true, "Application is required"],
       index: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: User,
+      required: [true, "User id is required"],
     },
     name: {
       type: String,
@@ -22,7 +28,7 @@ const ContactSchema = new mongoose.Schema(
       type: String,
       lowercase: true,
       trim: true,
-      default: null,
+      unique: true,
     },
     linkedIn: {
       type: String,

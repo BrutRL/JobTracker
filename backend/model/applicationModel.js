@@ -21,10 +21,10 @@ const ApplicationSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["Wishlist", "Applied", "Interview", "Offer", "Rejected"],
+        values: ["wishlist", "applied", "interview", "offer", "rejected"],
         message: "{VALUE} is not a valid status",
       },
-      default: "Wishlist",
+      default: "wishlist",
     },
     location: {
       type: String,

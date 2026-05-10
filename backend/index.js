@@ -10,6 +10,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import reminderRoutes from "./routes/reminderRoutes.js";
 import agenda from "./config/agenda.js";
+import cors from "cors";
 import { registerJobs } from "./jobs/reminderJob.js";
 
 const app = express();
@@ -23,12 +24,20 @@ console.log("Jobs registered");
 await agenda.start();
 console.log("Agenda started");
 
+// Middleware
 app.use("/avatar", express.static("public/avatar"));
 app.use("/resume", express.static("public/resume"));
 app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONT_END_URL,
+    credentials: true,
+  }),
+);
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Routes
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/application", applicationRoutes);

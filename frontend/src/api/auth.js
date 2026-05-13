@@ -16,7 +16,6 @@ export const login = async (body) => {
     throw error;
   }
 };
-
 export const register = async (body) => {
   try {
     const response = await fetch(`${url}/auth/register`, {
@@ -24,7 +23,6 @@ export const register = async (body) => {
       body: body,
       credentials: "include",
     });
-
     return await response.json();
   } catch (error) {
     throw error;
@@ -42,7 +40,7 @@ export const request_reset_pass = async (body) => {
       body: JSON.stringify(body),
       credentials: "include",
     });
-    return await response.json();
+    return await response.json(body);
   } catch (error) {
     throw error;
   }

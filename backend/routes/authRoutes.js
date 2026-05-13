@@ -17,6 +17,7 @@ import {
   validateLogin,
   validateResetPass,
 } from "../middleware/validate.js";
+import { auth } from "googleapis/build/src/apis/abusiveexperiencereport/index.js";
 const authRoutes = express.Router();
 export const avatarStorage = multer.diskStorage({
   destination: "./public/avatar",

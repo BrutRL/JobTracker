@@ -8,6 +8,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 export default function Register() {
   const register = registerMutate();
+  const [confirmShowPass, setConfirmShowPass] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,18 +17,16 @@ export default function Register() {
     confirm_password: "",
     avatarPath: "",
   });
-  const handleChange = useCallback(
-    (e) => {
-      const { name, value, files } = e.target;
+  const handleChange = useCallback((e) => {
+    const { name, value, files } = e.target;
 
-      setFormData((prev) => ({
-        ...prev,
-        [name]: files ? files[0] : value,
-      }));
-    },
-    [formData],
-  );
-  const registerFn = () => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  });
+  const registerFn = (e) => {
+    e.preventDefault();
     const data = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       data.append(key, value);
@@ -34,7 +34,17 @@ export default function Register() {
     if (formData.password != formData.confirm_password) {
       return toast.error(`Password dont match`);
     }
-    register.mutate(formData);
+    register.mutate(data, {
+      onSuccess: () => {},
+    });
+  };
+
+  const googleRegister = () => {
+    try {
+      window.location.href = import.meta.env.VITE_GOOGLE_LOGIN;
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <main className="bg-black w-full h-screen flex items-center justify-center">
@@ -48,6 +58,7 @@ export default function Register() {
 
         <div className="flex flex-col gap-4 mt-4">
           <Button
+            onClick={googleRegister}
             type="button"
             className="w-full h-[44px] bg-white hover:bg-gray-100 text-gray-800 flex items-center justify-center gap-2"
           >
@@ -111,26 +122,45 @@ export default function Register() {
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#6E7681]" />
               <Input
-                type="password"
+                type={showPass ? "text" : "password"}
                 name="password"
                 onChange={handleChange}
                 placeholder="Password"
                 className="pl-10 pr-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
                 required
               />
-              <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#6E7681] cursor-pointer" />
+              <span
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 "
+                onClick={() => setShowPass(!showPass)}
+              >
+                {showPass ? (
+                  <Eye className="w-4 h-4 text-[#6E7681] cursor-pointer" />
+                ) : (
+                  <EyeOff className="w-4 h-4 text-[#6E7681] cursor-pointer" />
+                )}
+              </span>
             </div>
 
             <div className="relative">
               <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#6E7681]" />
               <Input
-                type="password"
+                type={confirmShowPass ? "text" : "password"}
                 name="confirm_password"
                 onChange={handleChange}
                 placeholder="Confirm password"
                 className="pl-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
                 required
               />
+              <span
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 "
+                onClick={() => setConfirmShowPass(!confirmShowPass)}
+              >
+                {confirmShowPass ? (
+                  <Eye className="w-4 h-4 text-[#6E7681] cursor-pointer" />
+                ) : (
+                  <EyeOff className="w-4 h-4 text-[#6E7681] cursor-pointer" />
+                )}
+              </span>
             </div>
             <div className="relative">
               <File className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#6E7681]" />
@@ -145,9 +175,10 @@ export default function Register() {
 
             <Button
               type="submit"
+              disabled={register.isPending}
               className="w-full h-[44px] bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] mt-2"
             >
-              Create account
+              {register.isPending ? <Spinner /> : " Create account"}
             </Button>
           </form>
 

@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
-
+import { Spinner } from "@/components/ui/spinner";
+import { reqResetPassMutate } from "@/tanstack/authTanstack";
+import { useState } from "react";
 export default function ReqResetPass() {
+  const reqResetPass = reqResetPassMutate();
+  const [email, setEmail] = useState("");
+
+  const reqResetFn = (e) => {
+    e.preventDefault();
+    reqResetPass.mutate({ email });
+  };
   return (
     <main className="bg-black w-full h-screen flex items-center justify-center relative">
       <div className="sm:max-w-[440px] w-full bg-[#161B22] border-[0.5px] border-white/10 p-6 md:p-8 gap-6 rounded-lg z-10">
@@ -16,12 +25,14 @@ export default function ReqResetPass() {
           Enter your email and we'll send you a reset link.
         </p>
 
-        <form className="flex flex-col gap-4 mt-6">
+        <form className="flex flex-col gap-4 mt-6" onSubmit={reqResetFn}>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#6E7681]" />
             <Input
               type="email"
               name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="juan.delacruz@gmail.com"
               className="pl-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
               required
@@ -32,7 +43,7 @@ export default function ReqResetPass() {
             type="submit"
             className="w-full h-[44px] bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117]"
           >
-            Send reset link
+            {reqResetPass.isPending ? <Spinner /> : "Send reset link"}
           </Button>
 
           <Button

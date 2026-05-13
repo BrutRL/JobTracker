@@ -124,12 +124,13 @@ function Login() {
           </form>
 
           <div className="text-right">
-            <button
+            <Link
+              to="/req_reset_pass"
               type="button"
               className="text-[12px] text-[#F0A500] hover:underline"
             >
               Forgot password?
-            </button>
+            </Link>
           </div>
 
           <div className="text-center text-[13px] text-[#6E7681] mt-2">

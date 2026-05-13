@@ -38,3 +38,19 @@ export const registerMutate = () => {
     },
   });
 };
+
+export const reqResetPassMutate = () => {
+  return useMutation({
+    mutationFn: (email) => request_reset_pass(email),
+    onSuccess: (response) => {
+      if (response.ok) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+    },
+    onError: (err) => {
+      toast.error(err);
+    },
+  });
+};

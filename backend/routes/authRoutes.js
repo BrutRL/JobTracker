@@ -9,6 +9,7 @@ import {
   requestPasswordReset,
   logout,
   resetPassword,
+  authorized,
 } from "../controller/authController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import multer from "multer";
@@ -45,5 +46,5 @@ authRoutes.get("/google/jobquest/register", googleRegisterCallback);
 authRoutes.get("/google/jobquest/login", googleLoginCallback);
 authRoutes.get("/google/login", googleLoginRedirect);
 authRoutes.get("/google/register", googleRegisterRedirect);
-
+authRoutes.get("/authorized", verifyToken, authorized);
 export default authRoutes;

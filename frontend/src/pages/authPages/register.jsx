@@ -35,7 +35,15 @@ export default function Register() {
       return toast.error(`Password dont match`);
     }
     register.mutate(data, {
-      onSuccess: () => {},
+      onSuccess: () => {
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirm_password: "",
+          avatarPath: "",
+        });
+      },
     });
   };
 
@@ -100,6 +108,7 @@ export default function Register() {
               <Input
                 type="text"
                 name="name"
+                value={formData.name}
                 onChange={handleChange}
                 placeholder="Juan dela Cruz"
                 className="pl-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
@@ -112,6 +121,7 @@ export default function Register() {
               <Input
                 type="email"
                 name="email"
+                value={formData.email}
                 onChange={handleChange}
                 placeholder="juan.delacruz@gmail.com"
                 className="pl-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
@@ -124,6 +134,7 @@ export default function Register() {
               <Input
                 type={showPass ? "text" : "password"}
                 name="password"
+                value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
                 className="pl-10 pr-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
@@ -146,6 +157,7 @@ export default function Register() {
               <Input
                 type={confirmShowPass ? "text" : "password"}
                 name="confirm_password"
+                value={formData.confirm_password}
                 onChange={handleChange}
                 placeholder="Confirm password"
                 className="pl-10 bg-[#21262D] border-none h-[44px] text-white placeholder:text-[#6E7681]"
@@ -167,6 +179,7 @@ export default function Register() {
               <Input
                 type="file"
                 name="avatarPath"
+                accept="image/*"
                 onChange={handleChange}
                 className="pl-10 pt-2 bg-[#21262D] border-none h-[44px]  text-[#6E7681] file:text-[#6E7681] file:bg-[#21262D] file:border-none file:rounded-md file:px-1 file:py-1 file:cursor-pointer"
                 required

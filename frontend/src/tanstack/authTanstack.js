@@ -4,8 +4,9 @@ import {
   request_reset_pass,
   reset_pass,
   logout,
+  authorized,
 } from "@/api/auth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const loginMutate = () => {
@@ -52,5 +53,13 @@ export const reqResetPassMutate = () => {
     onError: (err) => {
       toast.error(err);
     },
+  });
+};
+
+export const useAuthorized = () => {
+  return useQuery({
+    queryKey: ["authorize"],
+    queryFn: () => authorized(),
+    retry: 1,
   });
 };

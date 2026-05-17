@@ -3,7 +3,7 @@ import { Application } from "../model/applicationModel.js";
 export const all = async (req, res) => {
   try {
     const application = await Application.find({ userId: req.userId });
-    res.status(200).json({ ok: false, data: application });
+    res.status(200).json({ ok: true, data: application });
   } catch (error) {
     res.status(400).json({ ok: false, error: error.message });
   }

@@ -255,3 +255,10 @@ export const logout = async (req, res) => {
     res.status(400).json({ ok: false, error: error.message });
   }
 };
+export const authorized = async (req, res) => {
+  try {
+    res.status(200).json({ ok: true, message: req.user });
+  } catch (error) {
+    res.status(401).json({ ok: false, error: error.message });
+  }
+};

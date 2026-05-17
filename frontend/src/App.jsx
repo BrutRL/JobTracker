@@ -1,26 +1,38 @@
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import { Toaster } from "sonner";
-import Login from "./pages/authPages/login";
-import Register from "./pages/authPages/register";
-import ReqResetPass from "./pages/authPages/reqResetPass";
-import NotFoundPage from "./pages/authPages/notFound";
 import Loading from "./pages/authPages/loading";
-import UnauthorizedPage from "./pages/authPages/unauthorized";
-import ResetPass from "./pages/authPages/resetPassword";
+
+const Login = lazy(() => import("./pages/authPages/login"));
+const Register = lazy(() => import("./pages/authPages/register"));
+const ReqResetPass = lazy(() => import("./pages/authPages/reqResetPass"));
+const NotFoundPage = lazy(() => import("./pages/authPages/notFound"));
+const Sidebar = lazy(() => import("./pages/mainPages/sidebar"));
+const ResetPass = lazy(() => import("./pages/authPages/resetPassword"));
+const ProtectedRoutes = lazy(() => import("./pages/authPages/protectedRoutes"));
+const Profile = lazy(() => import("./pages/mainPages/profile"));
+const Board = lazy(() => import("./pages/mainPages/board"));
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/req_reset_pass" element={<ReqResetPass />} />
-        <Route path="/not_found" element={<NotFoundPage />} />
-        <Route path="/loading" element={<Loading />} />
-        <Route path="/unathorized" element={<UnauthorizedPage />} />
-        <Route path="/reset_pass" element={<ResetPass />} />
-      </Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/req_reset_pass" element={<ReqResetPass />} />
+          <Route path="/not_found" element={<NotFoundPage />} />
+          <Route path="/reset_pass" element={<ResetPass />} />
+          <Route path="/user" element={<ProtectedRoutes />}>
+            <Route path="/user" element={<Sidebar />}>
+              <Route index element={<Navigate to="/user/board" replace />} />
+              <Route path="board" element={<Board />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
+          </Route>
+        </Routes>
+      </Suspense>
       <Toaster position="top-right" richColors />
     </BrowserRouter>
   );

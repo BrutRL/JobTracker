@@ -26,11 +26,7 @@ function Sidebar() {
         </main>
       </div>
 
-      <AddJobModal
-        open={addJobOpen}
-        onOpenChange={setAddJobOpen}
-        onSave={handleAddJob}
-      />
+      <AddJobModal open={addJobOpen} onOpenChange={setAddJobOpen} />
     </div>
   );
 }

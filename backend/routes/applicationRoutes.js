@@ -5,13 +5,14 @@ import {
   create,
   update,
   destroy,
+  updateStatus,
 } from "../controller/applicationController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { validateApplication } from "../middleware/validate.js";
 
 const applicationRoutes = express.Router();
 export const resumeStorage = multer.diskStorage({
-  destination: "./public/avatar",
+  destination: "./public/resume",
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
   },
@@ -37,6 +38,7 @@ applicationRoutes.put(
   validateApplication,
   update,
 );
+applicationRoutes.patch("/status/:id", verifyToken, updateStatus);
 applicationRoutes.delete("/delete/:id", verifyToken, destroy);
 
 export default applicationRoutes;

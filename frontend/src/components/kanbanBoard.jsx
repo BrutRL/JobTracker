@@ -2,7 +2,8 @@ import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { KanbanColumn } from "./kanbanColumn";
-
+import { DetailPanel } from "./detailsPanel";
+import TimeLineDetails from "./modal/interviewDetails";
 const COLUMNS = [
   { title: "Wishlist", status: "wishlist", color: "#6E7681" },
   { title: "Applied", status: "applied", color: "#4A90D9" },
@@ -13,12 +14,14 @@ const COLUMNS = [
 
 export function KanbanBoard({ jobs, onJobUpdate, onJobMove }) {
   const [selectedJob, setSelectedJob] = useState(null);
-
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="flex flex-1 overflow-hidden h-full">
-        <div className="flex-1 overflow-x-auto overflow-y-auto p-4 md:p-6">
-          <div className="flex flex-col md:flex-row gap-6 md:min-w-max">
+      <div
+        className="flex flex-1 overflow-hidden"
+        style={{ height: "calc(100vh - 56px)" }}
+      >
+        <div className="flex-1 overflow-auto p-4">
+          <div className="flex flex-col md:grid md:grid-cols-3 lg:grid-cols-5 gap-4 h-full md:max-w-[1400px] md:mx-auto">
             {COLUMNS.map((col) => {
               const columnJobs = jobs.filter((j) => j.status === col.status);
               return (
@@ -36,6 +39,26 @@ export function KanbanBoard({ jobs, onJobUpdate, onJobMove }) {
             })}
           </div>
         </div>
+
+        {/* Detail panel - desktop */}
+        {selectedJob && (
+          <div className="hidden md:block w-[360px] border-l border-white/10">
+            <DetailPanel
+              job={selectedJob}
+              onClose={() => setSelectedJob(null)}
+            />
+          </div>
+        )}
+
+        {/* Detail panel - mobile fullscreen */}
+        {selectedJob && (
+          <div className="md:hidden fixed inset-0 z-50 bg-[#161B22]">
+            <DetailPanel
+              job={selectedJob}
+              onClose={() => setSelectedJob(null)}
+            />
+          </div>
+        )}
       </div>
     </DndProvider>
   );

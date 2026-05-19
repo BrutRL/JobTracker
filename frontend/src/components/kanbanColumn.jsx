@@ -1,5 +1,6 @@
 import { useDrop } from "react-dnd";
-import { JobCard } from "./jobCard";
+import { JobCard } from "./JobCard";
+
 export function KanbanColumn({
   title,
   status,
@@ -9,21 +10,19 @@ export function KanbanColumn({
   onJobClick,
   onDrop,
 }) {
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{ isOver }, drop] = useDrop({
     accept: "job",
-    drop: (item) => onDrop(item.id, status),
+    drop: (item) => {
+      onDrop(item.id, status);
+    },
     collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+      isOver: monitor.isOver(),
     }),
-  }));
+  });
 
   const today = new Date().toISOString().split("T")[0];
-
   return (
-    <div
-      ref={drop}
-      className={`flex-shrink-0 w-full md:w-[280px] ${isOver ? "opacity-50" : ""}`}
-    >
+    <div className="flex-shrink-0 w-full flex flex-col">
       <div className="border-l-2 pl-3 mb-3" style={{ borderColor: color }}>
         <div className="flex items-center gap-2">
           <span className="text-white text-[14px]">{title}</span>
@@ -35,7 +34,12 @@ export function KanbanColumn({
           </span>
         </div>
       </div>
-      <div className="flex flex-col gap-2">
+
+      <div
+        ref={drop}
+        className="flex flex-col gap-2 flex-1 overflow-y-auto pr-1 rounded-lg pb-4"
+        style={{ minHeight: jobs.length === 0 ? "60px" : "auto" }}
+      >
         {jobs.map((job) => (
           <JobCard
             key={job.id}

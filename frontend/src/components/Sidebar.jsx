@@ -1,25 +1,9 @@
 import { LayoutGrid, BarChart3, Bell, Settings } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export function SidebarIcons({ jobs }) {
+export function SidebarIcons() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const counts = {
-    wishlist: jobs.filter((j) => j.status === "wishlist").length,
-    applied: jobs.filter((j) => j.status === "applied").length,
-    interview: jobs.filter((j) => j.status === "interview").length,
-    offer: jobs.filter((j) => j.status === "offer").length,
-    rejected: jobs.filter((j) => j.status === "rejected").length,
-  };
-
-  const statusColors = {
-    wishlist: "#6E7681",
-    applied: "#4A90D9",
-    interview: "#F0A500",
-    offer: "#3DDC84",
-    rejected: "#E05C6B",
-  };
 
   const navItems = [
     { icon: LayoutGrid, path: "/user/board", label: "Board" },
@@ -46,22 +30,6 @@ export function SidebarIcons({ jobs }) {
       ))}
 
       <div className="flex-1" />
-
-      <div className="flex flex-col gap-2">
-        {Object.entries(counts).map(([status, count]) => (
-          <div
-            key={status}
-            className="flex items-center justify-center w-10 h-6 rounded-full text-[10px]"
-            style={{
-              backgroundColor: `${statusColors[status]}20`,
-              color: statusColors[status],
-            }}
-            title={`${status}: ${count}`}
-          >
-            {count}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

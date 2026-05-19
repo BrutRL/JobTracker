@@ -13,6 +13,7 @@ const ResetPass = lazy(() => import("./pages/authPages/resetPassword"));
 const ProtectedRoutes = lazy(() => import("./pages/authPages/protectedRoutes"));
 const Profile = lazy(() => import("./pages/mainPages/profile"));
 const Board = lazy(() => import("./pages/mainPages/board"));
+
 function App() {
   return (
     <BrowserRouter>
@@ -22,7 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/req_reset_pass" element={<ReqResetPass />} />
-          <Route path="/not_found" element={<NotFoundPage />} />
+          <Route path="/*" element={<NotFoundPage />} />
           <Route path="/reset_pass" element={<ResetPass />} />
           <Route path="/user" element={<ProtectedRoutes />}>
             <Route path="/user" element={<Sidebar />}>

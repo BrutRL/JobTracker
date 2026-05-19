@@ -6,9 +6,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createMutate } from "@/tanstack/applicationTanstack";
-export function AddJobModal({ open, onOpenChange, onSave }) {
+export function AddJobModal({ open, onOpenChange }) {
   const create = createMutate();
   const [formData, setFormData] = useState({
     company: "",
@@ -22,53 +22,85 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
     tags: "",
     notes: "",
   });
+  const handleChange = useCallback((e) => {
+    const { name, value, files } = e.target;
 
-  const handleSubmit = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+  });
+  const createFn = (e) => {
     e.preventDefault();
-    onSave({
-      company: formData.company,
-      role: formData.role,
-      status: formData.status,
-      location: formData.location,
-      salaryMin: formData.salaryMin ? parseInt(formData.salaryMin) : undefined,
-      salaryMax: formData.salaryMax ? parseInt(formData.salaryMax) : undefined,
-      jobUrl: formData.jobUrl || undefined,
-      tags: formData.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      notes: formData.notes || undefined,
-      appliedDate: new Date().toISOString().split("T")[0],
-      timeline: [
-        {
-          id: `t${Date.now()}`,
-          date: new Date().toISOString().split("T")[0],
-          type: "Applied",
-          title: "Applied",
-        },
-      ],
-      contacts: [],
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
     });
-    setFormData({
-      company: "",
-      role: "",
-      status: "applied",
-      location: "Quezon City, PH",
-      salaryMin: "",
-      salaryMax: "",
-      jobUrl: "",
-      tags: "",
-      notes: "",
+    create.mutate(data, {
+      onSuccess: () => {
+        setFormData({
+          company: "",
+          role: "",
+          status: "applied",
+          location: "Quezon City, PH",
+          salaryMin: "",
+          salaryMax: "",
+          jobUrl: "",
+          tags: "",
+          notes: "",
+        });
+      },
     });
   };
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   onSave({
+  //     company: formData.company,
+  //     role: formData.role,
+  //     status: formData.status,
+  //     location: formData.location,
+  //     salaryMin: formData.salaryMin ? parseInt(formData.salaryMin) : undefined,
+  //     salaryMax: formData.salaryMax ? parseInt(formData.salaryMax) : undefined,
+  //     jobUrl: formData.jobUrl || undefined,
+  //     tags: formData.tags
+  //       .split(",")
+  //       .map((t) => t.trim())
+  //       .filter(Boolean),
+  //     notes: formData.notes || undefined,
+  //     appliedDate: new Date().toISOString().split("T")[0],
+  //     timeline: [
+  //       {
+  //         id: `t${Date.now()}`,
+  //         date: new Date().toISOString().split("T")[0],
+  //         type: "Applied",
+  //         title: "Applied",
+  //       },
+  //     ],
+  //     contacts: [],
+  //   });
+  //   setFormData({
+  //     company: "",
+  //     role: "",
+  //     status: "applied",
+  //     location: "Quezon City, PH",
+  //     salaryMin: "",
+  //     salaryMax: "",
+  //     jobUrl: "",
+  //     tags: "",
+  //     notes: "",
+  //   });
+  // };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px] bg-[#161B22] border-[0.5px] border-white/10 max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent
+        className="sm:max-w-[520px] bg-[#161B22] border-[0.5px] border-white/10 max-h-[90vh] overflow-y-auto p-6  [&>button]:text-white
+    [&>button]:opacity-100"
+      >
         <DialogHeader>
           <DialogTitle className="text-white">Add Job Application</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={createFn} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-[13px] text-[#6E7681] mb-2 block">
@@ -76,9 +108,8 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
               </label>
               <Input
                 value={formData.company}
-                onChange={(e) =>
-                  setFormData({ ...formData, company: e.target.value })
-                }
+                name="company"
+                onChange={handleChange}
                 placeholder="e.g., GCash"
                 className="bg-[#21262D] border-none text-white"
                 required
@@ -90,9 +121,8 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
               </label>
               <Input
                 value={formData.role}
-                onChange={(e) =>
-                  setFormData({ ...formData, role: e.target.value })
-                }
+                name="role"
+                onChange={handleChange}
                 placeholder="e.g., Frontend Developer"
                 className="bg-[#21262D] border-none text-white"
                 required
@@ -107,9 +137,8 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
+                name="status"
+                onChange={handleChange}
                 className="w-full bg-[#21262D] border-none text-white rounded-md h-10 px-3"
               >
                 <option value="wishlist">Wishlist</option>
@@ -125,9 +154,8 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
               </label>
               <Input
                 value={formData.location}
-                onChange={(e) =>
-                  setFormData({ ...formData, location: e.target.value })
-                }
+                onChange={handleChange}
+                name="location"
                 placeholder="City, Country"
                 className="bg-[#21262D] border-none text-white"
               />
@@ -141,10 +169,9 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
               </label>
               <Input
                 type="number"
+                name="salaryMin"
                 value={formData.salaryMin}
-                onChange={(e) =>
-                  setFormData({ ...formData, salaryMin: e.target.value })
-                }
+                onChange={handleChange}
                 placeholder="35000"
                 className="bg-[#21262D] border-none text-white"
               />
@@ -155,10 +182,9 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
               </label>
               <Input
                 type="number"
+                name="salaryMax"
                 value={formData.salaryMax}
-                onChange={(e) =>
-                  setFormData({ ...formData, salaryMax: e.target.value })
-                }
+                onChange={handleChange}
                 placeholder="55000"
                 className="bg-[#21262D] border-none text-white"
               />
@@ -171,22 +197,22 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
             </label>
             <Input
               type="url"
+              name="jobUrl"
               value={formData.jobUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, jobUrl: e.target.value })
-              }
+              onChange={handleChange}
               placeholder="https://..."
               className="bg-[#21262D] border-none text-white"
             />
           </div>
           <div>
             <label className="text-[13px] text-[#6E7681] mb-2 block">
-              Resume
+              Resume (PDF ONLY)
             </label>
             <Input
               type="file"
-              name="avatarPath"
-              accept="image/*"
+              name="resumePath"
+              onChange={handleChange}
+              accept=".pdf,application/pdf"
               className="bg-[#21262D]  border-none text-[#6E7681] file:text-[#6E7681] file:bg-[#21262D] file:border-none file:rounded-md  file:cursor-pointer"
               required
             />
@@ -198,9 +224,8 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
             </label>
             <Input
               value={formData.tags}
-              onChange={(e) =>
-                setFormData({ ...formData, tags: e.target.value })
-              }
+              name="tags"
+              onChange={handleChange}
               placeholder="React, TypeScript, Remote"
               className="bg-[#21262D] border-none text-white"
             />
@@ -212,9 +237,8 @@ export function AddJobModal({ open, onOpenChange, onSave }) {
             </label>
             <textarea
               value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
+              name="notes"
+              onChange={handleChange}
               placeholder="Any additional notes..."
               className="w-full h-[100px] bg-[#21262D] border-none rounded-lg p-3 text-white text-[13px] placeholder:text-[#6E7681] resize-none focus:outline-none focus:ring-1 focus:ring-[#F0A500]"
             />

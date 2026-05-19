@@ -1,15 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 export default function NotFoundPage() {
+  const navigate = useNavigate();
   return (
     <main className="min-h-screen bg-[#0D1117] flex flex-col items-center justify-center p-4 relative">
       <div className="text-center max-w-[480px]">
-        <div className="mb-8 flex justify-center">
-          <div className="w-24 h-24 rounded-full bg-[#F0A500]/10 flex items-center justify-center">
-            <AlertCircle className="w-12 h-12 text-[#F0A500]" />
-          </div>
-        </div>
         <div className="mb-2">
           <span className="text-[#F0A500] text-[72px]">404</span>
         </div>
@@ -21,7 +16,10 @@ export default function NotFoundPage() {
           been moved or deleted.
         </p>
 
-        <Button className="bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] h-[44px] px-8">
+        <Button
+          onClick={() => navigate("/")}
+          className="bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] h-[44px] px-8"
+        >
           Go to home
         </Button>
       </div>

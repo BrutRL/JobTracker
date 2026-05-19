@@ -1,6 +1,6 @@
-import { all, create } from "@/api/application";
+import { all, create, update, updateStatus, destroy } from "@/api/application";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { toast } from "sonner";
 export const allQuery = () => {
   return useQuery({
     queryKey: ["applications"],
@@ -20,7 +20,42 @@ export const createMutate = () => {
       }
     },
     onError: (err) => {
-      toast.error(err);
+      toast.error(err.message);
+    },
+  });
+};
+
+export const updateStatusMutate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data, id }) => updateStatus(data, id),
+    onSuccess: (response) => {
+      if (response.ok) {
+        queryClient.invalidateQueries(["applications"]);
+      } else {
+        toast.error(response.message);
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+};
+
+export const deleteMutate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => destroy(id),
+    onSuccess: (response) => {
+      if (response.ok) {
+        toast.success(response.message);
+        queryClient.invalidateQueries(["applications"]);
+      } else {
+        toast.error(response.message);
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 };

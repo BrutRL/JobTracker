@@ -1,3 +1,4 @@
+import { analytics } from "googleapis/build/src/apis/analytics/index.js";
 import { Application } from "../model/applicationModel.js";
 
 export const all = async (req, res) => {
@@ -88,6 +89,20 @@ export const update = async (req, res) => {
   }
 };
 
+export const updateStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  try {
+    const application = await Application.findByIdAndUpdate(id, {
+      status: status,
+    });
+    res
+      .status(200)
+      .json({ ok: true, message: `Application Status Updated Successfully` });
+  } catch (error) {
+    res.status(400).json({ ok: false, error: error.message });
+  }
+};
 export const destroy = async (req, res) => {
   const { id } = req.params;
   try {

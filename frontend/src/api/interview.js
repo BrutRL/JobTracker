@@ -1,6 +1,6 @@
 const url = import.meta.env.VITE_BACK_END_URL;
-export const all = async () => {
-  const response = await fetch(`${url}/application/all`, {
+export const all = async (id) => {
+  const response = await fetch(`${url}/interview/all/${id}`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -13,39 +13,29 @@ export const all = async () => {
 
 export const create = async (body) => {
   try {
-    const response = await fetch(`${url}/application/create`, {
+    const response = await fetch(`${url}/interview/create`, {
       method: "POST",
-      body: body,
-      credentials: "include",
-    });
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const update = async (body, id) => {
-  try {
-    const response = await fetch(`${url}/application/update/${id}`, {
-      method: "PUT",
-      body: body,
-      credentials: "include",
-    });
-    return await response.json();
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const updateStatus = async (status, id) => {
-  try {
-    const response = await fetch(`${url}/application/status/${id}`, {
-      method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+export const update = async (body, id) => {
+  try {
+    const response = await fetch(`${url}/interview/update/${id}`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
       credentials: "include",
     });
     return await response.json();
@@ -56,7 +46,7 @@ export const updateStatus = async (status, id) => {
 
 export const destroy = async (id) => {
   try {
-    const response = await fetch(`${url}/application/destroy/${id}`, {
+    const response = await fetch(`${url}/interview/destroy/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

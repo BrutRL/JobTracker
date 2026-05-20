@@ -141,7 +141,7 @@ export default function InterviewDetails({ job }) {
             {data.type !== "applied" && (
               <div className="flex gap-3">
                 <button
-                  className="text-[#4A90D9] opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="text-[#4A90D9] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   onClick={() => {
                     setShowUpdate(true);
                     setUpdateId(data._id);
@@ -151,7 +151,7 @@ export default function InterviewDetails({ job }) {
                   <PenLine className="w-4 h-4" />
                 </button>
                 <button
-                  className="text-[#E05C6B] opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="text-[#E05C6B] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                   onClick={() => {
                     setShowDelete(true);
                     setDeleteId(data._id);

@@ -4,16 +4,17 @@ import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { reqResetPassMutate } from "@/tanstack/authTanstack";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 export default function ReqResetPass() {
   const reqResetPass = reqResetPassMutate();
   const [email, setEmail] = useState("");
-
+  const navigate = useNavigate();
   const reqResetFn = (e) => {
     e.preventDefault();
     reqResetPass.mutate({ email });
   };
   return (
-    <main className="bg-black w-full h-screen flex items-center justify-center relative">
+    <main className="bg-black w-full h-screen flex items-center justify-center relative p-5">
       <div className="sm:max-w-[440px] w-full bg-[#161B22] border-[0.5px] border-white/10 p-6 md:p-8 gap-6 rounded-lg z-10">
         <div className="text-center mb-2" style={{ fontFamily: "Geist Mono" }}>
           <span className="text-[#F0A500]">JobQuest</span>
@@ -48,6 +49,7 @@ export default function ReqResetPass() {
 
           <Button
             type="button"
+            onClick={() => navigate("/")}
             className="w-full h-[44px] bg-transparent border-white/10 text-[#6E7681] hover:bg-[#21262D] hover:text-white flex items-center justify-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />

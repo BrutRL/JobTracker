@@ -110,64 +110,73 @@ export function DetailPanel({ job, onClose }) {
                 </div>
               </div>
             )}
-            {interviewData?.data?.map((data, index) => (
-              <div key={data._id || "applied"} className="flex gap-3">
-                <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-[#F0A500] mt-3 flex-shrink-0" />
-                  {index < interviewData?.data?.length - 1 && (
-                    <div
-                      className="w-[1px] bg-white/10 flex-1 my-1"
-                      style={{ minHeight: "28px" }}
-                    />
-                  )}
-                </div>
-
-                <div className="flex items-start justify-between flex-1 pb-3 p-2 rounded-lg hover:bg-[#21262D] transition-colors group">
-                  <div>
-                    <p className="text-white text-[13px]">
-                      {data.type === "applied"
-                        ? "Applied"
-                        : data.round || "Interview"}
-                    </p>
-                    <p className="text-[#6E7681] text-[11px]">
-                      {new Date(
-                        data.type === "applied" ? data.date : data.scheduledAt,
-                      ).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
-                    {data.notes && (
-                      <p className="text-[#6E7681] text-[11px] mt-1">
-                        "{data.notes}"
-                      </p>
-                    )}
-                    {data.outcome && (
-                      <span
-                        className="text-[11px] px-2 py-0.5 rounded-full mt-1 inline-block"
-                        style={{
-                          backgroundColor:
-                            data.outcome === "passed"
-                              ? "#3DDC8420"
-                              : data.outcome === "rejected"
-                                ? "#E05C6B20"
-                                : "#F0A50020",
-                          color:
-                            data.outcome === "passed"
-                              ? "#3DDC84"
-                              : data.outcome === "rejected"
-                                ? "#E05C6B"
-                                : "#F0A500",
-                        }}
-                      >
-                        {data.outcome}
-                      </span>
+            <div>
+              <p className="text-white text-[12px]">Timeline</p>
+              {interviewData?.data?.map((data, index) => (
+                <div key={data._id || "applied"} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <div className="w-2 h-2 rounded-full bg-[#F0A500] mt-3 flex-shrink-0" />
+                    {index < interviewData?.data?.length - 1 && (
+                      <div
+                        className="w-[1px] bg-white/10 flex-1 my-1"
+                        style={{ minHeight: "28px" }}
+                      />
                     )}
                   </div>
+
+                  <div className="flex items-start justify-between flex-1 pb-3 p-2 rounded-lg hover:bg-[#21262D] transition-colors group">
+                    <div>
+                      <p className="text-white text-[13px]">
+                        {data.type === "applied"
+                          ? "Applied"
+                          : data.round || "Interview"}
+                      </p>
+                      <p className="text-[#6E7681] text-[11px]">
+                        {new Date(
+                          data.type === "applied"
+                            ? data.date
+                            : data.scheduledAt,
+                        ).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                      {data.notes && (
+                        <p className="text-[#6E7681] text-[11px] mt-1">
+                          "{data.notes}"
+                        </p>
+                      )}
+                      {data.outcome && (
+                        <span
+                          className="text-[11px] px-2 py-0.5 rounded-full mt-1 inline-block"
+                          style={{
+                            backgroundColor:
+                              data.outcome === "passed"
+                                ? "#3DDC8420"
+                                : data.outcome === "rejected"
+                                  ? "#E05C6B20"
+                                  : "#F0A50020",
+                            color:
+                              data.outcome === "passed"
+                                ? "#3DDC84"
+                                : data.outcome === "rejected"
+                                  ? "#E05C6B"
+                                  : "#F0A500",
+                          }}
+                        >
+                          {data.outcome}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            <button className="w-full flex items-center justify-center cursor-pointer gap-2 bg-[#F0A500] text-[#0D1117] rounded-lg py-3 text-[14px] hover:opacity-90 transition-opacity mt-4">
+              Edit Application
+            </button>
           </div>
         )}
 

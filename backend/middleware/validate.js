@@ -195,11 +195,11 @@ export const validateContact = (req, res, next) => {
         .json({ ok: false, message: "Invalid email format" });
     }
 
-    if (linkedIn && !linkedInRegex.test(linkedIn)) {
-      return res
-        .status(400)
-        .json({ ok: false, message: "Invalid LinkedIn URL format" });
-    }
+    // if (linkedIn && !linkedInRegex.test(linkedIn)) {
+    //   return res
+    //     .status(400)
+    //     .json({ ok: false, message: "Invalid LinkedIn URL format" });
+    // }
 
     next();
   } catch (error) {

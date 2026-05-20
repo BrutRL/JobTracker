@@ -8,7 +8,7 @@ import {
 } from "@/api/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-
+import { useNavigate } from "react-router-dom";
 export const loginMutate = () => {
   return useMutation({
     mutationFn: (data) => login(data),
@@ -55,7 +55,23 @@ export const reqResetPassMutate = () => {
     },
   });
 };
-
+export const logoutMutate = () => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: () => logout(),
+    onSuccess: (response) => {
+      if (response.ok) {
+        toast.success(response.message);
+        navigate("/");
+      } else {
+        toast.error(response.message);
+      }
+    },
+    onError: (err) => {
+      toast.error(err);
+    },
+  });
+};
 export const useAuthorized = () => {
   return useQuery({
     queryKey: ["authorize"],

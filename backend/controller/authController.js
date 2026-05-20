@@ -110,6 +110,7 @@ export const googleLoginCallback = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        avatar: user.avatar,
       },
       process.env.JWT_SECRET,
       {
@@ -146,6 +147,7 @@ export const login = async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
+        avatar: user.avatar,
       },
       process.env.JWT_SECRET,
       {

@@ -1,6 +1,6 @@
 const url = import.meta.env.VITE_BACK_END_URL;
 export const all = async (id) => {
-  const response = await fetch(`${url}/contact/all/${id}`, {
+  const response = await fetch(`${url}/contact/specific/${id}`, {
     method: "GET",
     headers: {
       Accept: "application/json",

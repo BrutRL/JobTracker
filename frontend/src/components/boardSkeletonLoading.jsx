@@ -21,9 +21,9 @@ export default function BoardSkeleton() {
                   highlightColor="#30363D"
                 />
               </div>
-              {Array.from({ length: count }).map((_, i) => (
+              {Array.from({ length: count }).map((_, index) => (
                 <div
-                  key={i}
+                  key={index}
                   className="bg-[#161B22] border-[0.5px] border-white/10 rounded-lg p-3 flex flex-col gap-2"
                 >
                   <div className="flex items-start gap-2">

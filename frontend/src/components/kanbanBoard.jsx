@@ -3,7 +3,6 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { KanbanColumn } from "./kanbanColumn";
 import { DetailPanel } from "./detailsPanel";
-import TimeLineDetails from "./modal/interviewDetails";
 const COLUMNS = [
   { title: "Wishlist", status: "wishlist", color: "#6E7681" },
   { title: "Applied", status: "applied", color: "#4A90D9" },

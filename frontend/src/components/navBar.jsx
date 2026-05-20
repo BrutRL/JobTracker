@@ -59,7 +59,7 @@ export function Navbar({ onAddJob }) {
 
         <button
           onClick={onAddJob}
-          className="bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] h-9 w-9 md:w-auto md:px-4 rounded-lg flex items-center justify-center gap-2"
+          className="bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] h-9 w-9 md:w-auto md:px-4 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden md:inline text-[14px]">Add job</span>

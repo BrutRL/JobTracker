@@ -30,7 +30,7 @@ export const create = async (body) => {
 export const update = async (body, id) => {
   try {
     const response = await fetch(`${url}/interview/update/${id}`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -46,7 +46,7 @@ export const update = async (body, id) => {
 
 export const destroy = async (id) => {
   try {
-    const response = await fetch(`${url}/interview/destroy/${id}`, {
+    const response = await fetch(`${url}/interview/delete/${id}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",

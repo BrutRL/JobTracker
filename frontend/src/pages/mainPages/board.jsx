@@ -2,15 +2,13 @@ import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { allQuery, updateStatusMutate } from "@/tanstack/applicationTanstack";
 import { KanbanBoard } from "../../components/KanbanBoard";
-
+import BoardSkeleton from "@/components/boardSkeletonLoading";
 function Board() {
   const { setJobs: setLayoutJobs } = useOutletContext();
   const updateStatus = updateStatusMutate();
   const { data, isLoading } = allQuery();
-
   const [jobs, setJobs] = useState([]);
 
-  // sync API data into local state once loaded
   useEffect(() => {
     if (data?.data) {
       const mapped = data.data.map((job) => ({
@@ -42,19 +40,11 @@ function Board() {
     setLayoutJobs((prev) =>
       prev.map((j) => (j.id === jobId ? { ...j, status: newStatus } : j)),
     );
-
-    updateStatus.mutate({
-      data: newStatus,
-      id: jobId,
-    });
+    updateStatus.mutate({ data: newStatus, id: jobId });
   };
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full text-[#6E7681]">
-        Loading...
-      </div>
-    );
-  }
+
+  if (isLoading) return <BoardSkeleton />;
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <KanbanBoard

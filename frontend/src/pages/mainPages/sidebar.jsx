@@ -7,11 +7,6 @@ function Sidebar() {
   const [jobs, setJobs] = useState([]);
   const [addJobOpen, setAddJobOpen] = useState(false);
 
-  const handleAddJob = (jobData) => {
-    setJobs((prev) => [...prev, { ...jobData, id: `j${Date.now()}` }]);
-    setAddJobOpen(false);
-  };
-
   return (
     <div className="h-screen flex flex-col bg-[#0D1117] overflow-hidden">
       <Navbar onAddJob={() => setAddJobOpen(true)} />

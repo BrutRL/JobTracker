@@ -14,6 +14,7 @@ const ProtectedRoutes = lazy(() => import("./pages/authPages/protectedRoutes"));
 const Profile = lazy(() => import("./pages/mainPages/profile"));
 const Board = lazy(() => import("./pages/mainPages/board"));
 const ErrorPage = lazy(() => import("./pages/authPages/errorPage"));
+const TooManyRequest = lazy(() => import("./pages/authPages/tooManyRequest"));
 function App() {
   return (
     <BrowserRouter>
@@ -26,6 +27,7 @@ function App() {
           <Route path="/error" element={<ErrorPage />} />
           <Route path="/*" element={<NotFoundPage />} />
           <Route path="/reset_pass" element={<ResetPass />} />
+          <Route path="/limit_page" element={<TooManyRequest />} />
           <Route path="/user" element={<ProtectedRoutes />}>
             <Route path="/user" element={<Sidebar />}>
               <Route index element={<Navigate to="/user/board" replace />} />

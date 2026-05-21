@@ -12,7 +12,7 @@ import reminderRoutes from "./routes/reminderRoutes.js";
 import agenda from "./config/agenda.js";
 import cors from "cors";
 import { registerJobs } from "./jobs/reminderJob.js";
-
+import rateLimit from "express-rate-limit";
 const app = express();
 const PORT = 3000;
 
@@ -34,6 +34,18 @@ app.use(
     credentials: true,
   }),
 );
+const globalLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100,
+  handler: (req, res, next, options) => {
+    res.status(options.statusCode).json({
+      error: "Too many requests",
+      redirect: `${process.env.FRONT_END_URL}/limit_page`,
+    });
+  },
+});
+
+app.use(globalLimiter);
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 

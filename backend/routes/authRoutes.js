@@ -12,6 +12,7 @@ import {
   authorized,
 } from "../controller/authController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
+import { loginLimiter, registerLimiter } from "../middleware/rateLimiter.js";
 import multer from "multer";
 import {
   validateRegister,
@@ -32,13 +33,14 @@ const uploadAvatar = multer({
   limits: { fileSize: 1 * 1024 * 1024 },
 });
 
-authRoutes.post("/login", validateLogin, login);
+authRoutes.post("/login", validateLogin, loginLimiter, login);
 authRoutes.post("/request_reset_pass", requestPasswordReset);
 authRoutes.put("/reset_pass/:id", validateResetPass, resetPassword);
 authRoutes.post(
   "/register",
   uploadAvatar.single("avatarPath"),
   validateRegister,
+  registerLimiter,
   register,
 );
 authRoutes.post("/logout", verifyToken, logout);

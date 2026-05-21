@@ -9,7 +9,7 @@ import {
 } from "../controller/applicationController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { validateApplication } from "../middleware/validate.js";
-
+import { applicationLimiter } from "../middleware/rateLimiter.js";
 const applicationRoutes = express.Router();
 export const resumeStorage = multer.diskStorage({
   destination: "./public/resume",
@@ -29,6 +29,7 @@ applicationRoutes.post(
   verifyToken,
   uploadResume.single("resumePath"),
   validateApplication,
+  applicationLimiter,
   create,
 );
 applicationRoutes.put(

@@ -34,7 +34,11 @@ function Profile() {
     if (formData.password != formData.confirm_password) {
       return toast.error("Password dont match");
     }
-    update.mutate(formData);
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      data.append(key, value);
+    });
+    update.mutate(data);
   };
   const deleteFn = () => {
     destroy.mutate();

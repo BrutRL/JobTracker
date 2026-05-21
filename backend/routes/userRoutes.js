@@ -1,5 +1,6 @@
 import { specific, update, destroy } from "../controller/userController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
+import { profileUpdateLimiter } from "../middleware/rateLimiter.js";
 import express from "express";
 import multer from "multer";
 const userRoutes = express.Router();
@@ -21,6 +22,7 @@ userRoutes.put(
   "/update",
   verifyToken,
   uploadAvatar.single("avatarPath"),
+  profileUpdateLimiter,
   update,
 );
 userRoutes.delete("/delete", verifyToken, destroy);

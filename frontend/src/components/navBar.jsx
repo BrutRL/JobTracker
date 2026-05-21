@@ -93,11 +93,13 @@ export function Navbar({ onAddJob }) {
 
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none">
-              <div className="w-8 h-8 rounded-full bg-[#F0A500] flex items-center justify-center text-[#0D1117] text-[12px] font-medium">
-                {initials}
-              </div>
+              <img
+                src={`${import.meta.env.VITE_BACK_END_URL}/avatar/${user?.avatar}`}
+                alt="Profile image"
+                className="w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center"
+              />
               <span className="hidden md:inline text-white text-[14px]">
-                {user?.name}
+                {user?.name?.split(" ")[0]}
               </span>
             </DropdownMenuTrigger>
             <DropdownMenuContent

@@ -27,9 +27,9 @@ export function JobCard({ job, onClick, isToday }) {
         )}
       </div>
       <div className="flex flex-wrap gap-1">
-        {job.tags.map((tag) => (
+        {job.tags.map((tag, id) => (
           <span
-            key={tag?._id}
+            key={id}
             className="text-[11px] bg-[#21262D] text-[#6E7681] px-2 py-0.5 rounded-full"
           >
             {tag}

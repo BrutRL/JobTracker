@@ -7,7 +7,7 @@ export const verifyToken = async (req, res, next) => {
   try {
     const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
     if (!token) {
-      res.status(401).json({ ok: false, message: `Uauthenticated` });
+      return res.status(401).json({ ok: false, message: `Unauthenticated` });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -15,6 +15,6 @@ export const verifyToken = async (req, res, next) => {
     req.userId = decoded.id;
     next();
   } catch (error) {
-    res.status(401).json({ ok: false, message: `Unauthorized` });
+    return res.status(401).json({ ok: false, message: `Unauthorized` });
   }
 };

@@ -64,17 +64,34 @@ export const googleRegisterCallback = async (req, res) => {
 
     const randomPassword = crypto.randomBytes(32).toString("hex");
 
-    await User.create({
+    const user = await User.create({
       name: data.name,
       email: data.email,
       avatar: filename,
       password: randomPassword,
     });
-
-    res.redirect(`${process.env.FRONT_END_URL}/google_login_success`);
+    const token = jwt.sign(
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "5h",
+      },
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 3 * 60 * 60 * 1000,
+    });
+    res.redirect(`${process.env.FRONT_END_URL}/user`);
   } catch (error) {
-    console.error(error);
-    res.redirect(`${process.env.FRONT_END_URL}/google_failed`);
+    console.log(error);
+    res.redirect(`${process.env.FRONT_END_URL}/error`);
   }
 };
 
@@ -103,7 +120,7 @@ export const googleLoginCallback = async (req, res) => {
 
     const user = await User.findOne({ email: data.email });
     if (!user) {
-      return res.redirect(`${process.env.FRONT_END_URL}/google_failed`);
+      return res.redirect(`${process.env.FRONT_END_URL}/error`);
     }
     const token = jwt.sign(
       {
@@ -123,11 +140,10 @@ export const googleLoginCallback = async (req, res) => {
       sameSite: "None",
       maxAge: 3 * 60 * 60 * 1000,
     });
-    res.redirect(`${process.env.FRONT_END_URL}/google_login_success`);
+    res.redirect(`${process.env.FRONT_END_URL}/user`);
   } catch (error) {
     console.error(error);
-    console.log(process.env.GOOGLE_CLIENT_ID);
-    res.redirect(`${process.env.FRONT_END_URL}/google_failed`);
+    res.redirect(`${process.env.FRONT_END_URL}/error`);
   }
 };
 

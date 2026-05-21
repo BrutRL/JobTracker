@@ -49,7 +49,7 @@ export default function Register() {
 
   const googleRegister = () => {
     try {
-      window.location.href = import.meta.env.VITE_GOOGLE_LOGIN;
+      window.location.href = import.meta.env.VITE_GOOGLE_REGISTER;
     } catch (error) {
       console.log(error);
     }

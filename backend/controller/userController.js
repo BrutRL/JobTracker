@@ -15,27 +15,31 @@ export const specific = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const { name, email, password, emailReminders } = req.body;
-    const avatarPath = req.file.filename;
 
-    const hashPassword = await bcrypt.hash(password, 10);
-    const user = await User.findByIdAndUpdate(
-      req.userId,
-      {
-        name: name,
-        email: email,
-        avatar: avatarPath,
-        password: hashPassword,
-        emailReminders: emailReminders,
-      },
-      {
-        new: true,
-      },
-    ).select("-password");
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (emailReminders !== undefined)
+      updateFields.emailReminders = emailReminders;
+
+    // only update avatar if a file was uploaded
+    if (req.file) updateFields.avatar = req.file.filename;
+
+    // only update password if provided
+    if (password) {
+      const hashPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashPassword;
+    }
+
+    const user = await User.findByIdAndUpdate(req.userId, updateFields, {
+      new: true,
+    }).select("-password");
 
     if (!user) {
       return res.status(404).json({ ok: false, message: "User not found" });
     }
-    res.status(200).json({ ok: true, message: `Account updated successfully` });
+
+    res.status(200).json({ ok: true, message: "Account updated successfully" });
   } catch (error) {
     res.status(400).json({ ok: false, error: error.message });
   }

@@ -9,6 +9,7 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import reminderRoutes from "./routes/reminderRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 import agenda from "./config/agenda.js";
 import cors from "cors";
 import { registerJobs } from "./jobs/reminderJob.js";
@@ -36,10 +37,10 @@ app.use(
 );
 const globalLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 100,
+  max: 1000,
   handler: (req, res, next, options) => {
     res.status(options.statusCode).json({
-      error: "Too many requests",
+      message: "Too many requests",
       redirect: `${process.env.FRONT_END_URL}/limit_page`,
     });
   },
@@ -56,6 +57,7 @@ app.use("/application", applicationRoutes);
 app.use("/contact", contactRoutes);
 app.use("/interview", interviewRoutes);
 app.use("/reminder", reminderRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 process.on("SIGTERM", async () => {
   await agenda.stop();

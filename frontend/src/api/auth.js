@@ -87,5 +87,9 @@ export const authorized = async () => {
     },
     credentials: "include",
   });
-  return await response.json();
+  const data = await response.json();
+  return {
+    status: response.status,
+    ...data,
+  };
 };

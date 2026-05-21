@@ -15,6 +15,8 @@ const Profile = lazy(() => import("./pages/mainPages/profile"));
 const Board = lazy(() => import("./pages/mainPages/board"));
 const ErrorPage = lazy(() => import("./pages/authPages/errorPage"));
 const TooManyRequest = lazy(() => import("./pages/authPages/tooManyRequest"));
+const DashBoard = lazy(() => import("./pages/mainPages/dashboard"));
+const Reminder = lazy(() => import("./pages/mainPages/reminder"));
 function App() {
   return (
     <BrowserRouter>
@@ -32,6 +34,8 @@ function App() {
             <Route path="/user" element={<Sidebar />}>
               <Route index element={<Navigate to="/user/board" replace />} />
               <Route path="board" element={<Board />} />
+              <Route path="dashboard" element={<DashBoard />} />
+              <Route path="reminders" element={<Reminder />} />
               <Route path="profile" element={<Profile />} />
             </Route>
           </Route>

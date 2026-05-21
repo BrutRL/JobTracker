@@ -2,6 +2,7 @@ import { useAuthorized } from "@/tanstack/authTanstack";
 import UnauthorizedPage from "./unauthorized";
 import Loading from "./loading";
 import { Outlet, Navigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function ProtectedRoutes() {
   const { data, isLoading } = useAuthorized();
@@ -11,6 +12,7 @@ function ProtectedRoutes() {
   }
 
   if (data?.status === 429) {
+    toast.error(data.message || "Too many requests");
     return <Navigate to="/limit_page" replace />;
   }
 

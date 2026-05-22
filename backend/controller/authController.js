@@ -214,7 +214,7 @@ export const requestPasswordReset = async (req, res) => {
                       We received a request to reset your password. Click the button below to proceed:
                     </p>
                     <div style="text-align:center; margin:30px 0;">
-                      <a href="${process.env.FRONT_END_URL}/reset_pass?email=${user.email}?id=${user._id}"
+                      <a href="${process.env.FRONT_END_URL}/reset_pass?email=${user.email}&id=${user._id}"
                          style="background-color:#F0A500; color:#0D1117; padding:12px 24px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block;">
                         Reset My Password
                       </a>
@@ -236,9 +236,11 @@ export const requestPasswordReset = async (req, res) => {
       `,
     });
 
-    res
-      .status(200)
-      .json({ ok: true, message: "Reset link sent to your email" });
+    res.status(200).json({
+      ok: true,
+      message:
+        "A reset link has been sent to your email. Please check your inbox or spam folder",
+    });
   } catch (error) {
     res.status(500).json({ ok: false, error: error.message });
   }

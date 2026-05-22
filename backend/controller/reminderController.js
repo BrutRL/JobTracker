@@ -19,11 +19,19 @@ export const create = async (req, res) => {
   try {
     const trigger = new Date(triggerAt);
     if (isNaN(trigger) || trigger <= new Date()) {
-      return res
-        .status(400)
-        .json({ ok: false, message: "triggerAt must be a valid future date" });
+      return res.status(400).json({
+        ok: false,
+        message: "Date and Time must be a valid future date",
+      });
     }
+    const user = await User.findById(req.userId);
 
+    if (!user.emailReminders) {
+      return res.status(404).json({
+        ok: false,
+        message: "Please enable Email Reminders before creating",
+      });
+    }
     const application = await Application.findOne({
       _id: applicationId,
       userId: req.userId,
@@ -48,8 +56,6 @@ export const create = async (req, res) => {
       reminderId: reminder._id.toString(),
     });
 
-    console.log(`Reminder scheduled for ${triggerAt}`);
-
     res.status(201).json({
       ok: true,
       message: "Reminder successfully created",
@@ -66,9 +72,10 @@ export const update = async (req, res) => {
   try {
     const trigger = new Date(triggerAt);
     if (isNaN(trigger) || trigger <= new Date()) {
-      return res
-        .status(400)
-        .json({ ok: false, message: "triggerAt must be a valid future date" });
+      return res.status(400).json({
+        ok: false,
+        message: "Time and Date must be a valid future date",
+      });
     }
 
     const reminder = await Reminder.findOne({ _id: id, userId: req.userId });

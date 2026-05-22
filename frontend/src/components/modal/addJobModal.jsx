@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useCallback } from "react";
 import { createMutate } from "@/tanstack/applicationTanstack";
+import { Spinner } from "../ui/spinner";
 export function AddJobModal({ open, onOpenChange }) {
   const create = createMutate();
   const [formData, setFormData] = useState({
@@ -249,15 +250,16 @@ export function AddJobModal({ open, onOpenChange }) {
               type="button"
               onClick={() => onOpenChange(false)}
               variant="outline"
-              className="flex-1 bg-transparent border-white/10 text-[#6E7681] hover:bg-[#21262D] hover:text-white"
+              className="flex-1 cursor-pointer bg-transparent border-white/10 text-[#6E7681] hover:bg-[#21262D] hover:text-white"
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117]"
+              disabled={create.isPending}
+              className="flex-1 flex justify-center items-center cursor-pointer bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] disabled:cursor-not-allowed "
             >
-              Save application
+              {create.isPending ? <Spinner /> : "Save application"}
             </Button>
           </div>
         </form>

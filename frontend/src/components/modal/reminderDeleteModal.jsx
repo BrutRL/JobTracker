@@ -1,7 +1,6 @@
 import { Spinner } from "../ui/spinner";
-export default function InterviewDeleteModal({ open, onCancel, onConfirm }) {
+export default function ReminderDeleteModal({ open, onCancel, onConfirm }) {
   if (!open) return null;
-
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="bg-[#161B22] border border-white/10 rounded-xl w-full max-w-[500px] p-6">
@@ -9,8 +8,8 @@ export default function InterviewDeleteModal({ open, onCancel, onConfirm }) {
           Are you sure?
         </h3>
         <p className="text-[#6E7681] text-[13px] mb-6">
-          Are you sure you want to delete this timeline interview entry? This
-          action cannot be undone.
+          Are you sure you want to delete this reminder? This action cannot be
+          undone.
         </p>
         <div className="flex justify-end gap-2">
           <button

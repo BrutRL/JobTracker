@@ -1,5 +1,7 @@
 /* Target the calendar picker icon in Chrome, Edge, Safari */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1); /* flips dark icon to white */
-  opacity: 1; /* ensure it’s visible */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 1;
+  cursor: pointer;
 }

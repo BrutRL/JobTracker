@@ -29,10 +29,7 @@ function Login() {
     <main className="bg-black w-full h-screen flex items-center justify-center p-5">
       <div className="sm:max-w-[440px] w-full bg-[#161B22] border-[0.5px] border-white/10 p-6 md:p-8 gap-6 max-h-[90vh] overflow-y-auto rounded-lg">
         <div>
-          <div
-            className="text-center mb-2"
-            style={{ fontFamily: "Geist Mono" }}
-          >
+          <div className="text-center mb-2">
             <span className="text-[#F0A500]">JobQuest</span>
           </div>
           <h1 className="text-[26px] text-white text-center">Welcome back.</h1>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { User as UserIcon, Mail, Lock, File, Eye, EyeOff } from "lucide-react";
 import { updateMutate, deleteMutate } from "@/tanstack/userTanstack";
+import UserDeleteModal from "@/components/modal/userDeleteModal";
 import { useState, useCallback } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
@@ -10,6 +11,7 @@ function Profile() {
   const { user } = useAuth();
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name ?? "",
     email: user?.email ?? "",
@@ -193,17 +195,21 @@ function Profile() {
                 <Button
                   variant="outline"
                   type="button"
-                  disabled={destroy.isPending}
-                  onClick={deleteFn}
+                  onClick={() => setShowDelete(true)}
                   className="w-full h-[44px] cursor-pointer bg-transparent border-[#E05C6B] text-[#E05C6B] hover:bg-[#E05C6B]/10 hover:text-[#E05C6B] disabled:cursor-not-allowed"
                 >
-                  {destroy.isPending ? <Spinner /> : "Delete account"}
+                  Delete Account
                 </Button>
               </div>
             </div>
           </div>
         </form>
       </div>
+      <UserDeleteModal
+        open={showDelete}
+        onCancel={() => setShowDelete(false)}
+        onConfirm={deleteFn}
+      />
     </div>
   );
 }

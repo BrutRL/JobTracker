@@ -8,7 +8,6 @@ import { transporter } from "../middleware/nodemailer.js";
 export function registerJobs(agenda) {
   agenda.define("send reminder", async (job) => {
     const { reminderId } = job.attrs.data;
-    console.log("🔔 Job triggered for reminderId:", reminderId);
 
     try {
       const reminder = await Reminder.findById(reminderId);
@@ -73,7 +72,7 @@ export function registerJobs(agenda) {
                         </tr>
                       </table>
                       <div style="text-align:center; margin:30px 0;">
-                        <a href="${process.env.CLIENT_URL}/board"
+                        <a href="${process.env.FRONT_END_URL}/user"
                            style="background-color:#F0A500; color:#0D1117; padding:12px 24px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block;">
                           View Application
                         </a>
@@ -92,7 +91,6 @@ export function registerJobs(agenda) {
         `,
       });
 
-      console.log(`Email sent to ${user.email} for ${app.company}`);
       reminder.sent = true;
       await reminder.save();
     } catch (error) {

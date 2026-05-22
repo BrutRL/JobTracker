@@ -44,7 +44,25 @@ export const update = async (req, res) => {
     res.status(400).json({ ok: false, error: error.message });
   }
 };
-
+export const updateEmailReminder = async (req, res) => {
+  const { emailReminders } = req.body;
+  const user = await User.findByIdAndUpdate(
+    req.userId,
+    {
+      emailReminders: emailReminders,
+    },
+    {
+      new: true,
+    },
+  );
+  res
+    .status(200)
+    .json({ ok: true, message: `Email Reminders updated successfully` });
+  try {
+  } catch (error) {
+    res.status(400).json({ ok: false, error: error.message });
+  }
+};
 export const destroy = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.userId);

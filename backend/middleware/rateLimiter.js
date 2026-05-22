@@ -9,7 +9,21 @@ const jsonHandler = (req, res, next, options) => {
 };
 
 export const loginLimiter = rateLimit({
-  windowMs: 3 * 60 * 1000, // 3 minutes
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 5,
+  handler: jsonHandler,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+export const resetEmailLimiter = rateLimit({
+  windowMs: 20 * 60 * 1000, // 20 minutes
+  max: 5,
+  handler: jsonHandler,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+export const resetPassLimiter = rateLimit({
+  windowMs: 20 * 60 * 1000, // 20 minutes
   max: 5,
   handler: jsonHandler,
   standardHeaders: true,

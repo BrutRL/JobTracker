@@ -22,6 +22,23 @@ export const update = async (body) => {
     throw error;
   }
 };
+
+export const updateEmailReminder = async (body) => {
+  try {
+    const response = await fetch(`${url}/user/email_reminder`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
+    return await response.json(body);
+  } catch (error) {
+    throw error;
+  }
+};
 export const destroy = async () => {
   try {
     const response = await fetch(`${url}/user/delete`, {

@@ -1,4 +1,9 @@
-import { specific, update, destroy } from "../controller/userController.js";
+import {
+  specific,
+  update,
+  destroy,
+  updateEmailReminder,
+} from "../controller/userController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { profileUpdateLimiter } from "../middleware/rateLimiter.js";
 import express from "express";
@@ -25,6 +30,7 @@ userRoutes.put(
   profileUpdateLimiter,
   update,
 );
+userRoutes.patch("/email_reminder", verifyToken, updateEmailReminder);
 userRoutes.delete("/delete", verifyToken, destroy);
 
 export default userRoutes;

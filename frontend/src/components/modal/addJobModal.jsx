@@ -42,8 +42,8 @@ export function AddJobModal({ open, onOpenChange }) {
         setFormData({
           company: "",
           role: "",
-          status: "applied",
-          location: "Quezon City, PH",
+          status: "",
+          location: "",
           salaryMin: "",
           salaryMax: "",
           jobUrl: "",

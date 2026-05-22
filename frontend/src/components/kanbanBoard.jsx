@@ -45,6 +45,10 @@ export function KanbanBoard({ jobs, onJobUpdate, onJobMove }) {
             <DetailPanel
               job={selectedJob}
               onClose={() => setSelectedJob(null)}
+              onUpdateJob={(updatedJob) => {
+                onJobUpdate(updatedJob);
+                setSelectedJob(updatedJob);
+              }}
             />
           </div>
         )}

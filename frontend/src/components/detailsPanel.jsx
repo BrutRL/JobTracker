@@ -3,6 +3,7 @@ import { useState } from "react";
 import InterviewDetails from "./interviewDetails";
 import Contact from "./contact";
 import { allQuery } from "@/tanstack/interviewTanstack";
+import EditApplicationPanel from "./editApplication";
 const STATUS_COLORS = {
   wishlist: "#6E7681",
   applied: "#4A90D9",
@@ -11,11 +12,20 @@ const STATUS_COLORS = {
   rejected: "#E05C6B",
 };
 
-export function DetailPanel({ job, onClose }) {
+export function DetailPanel({ job, onClose, onUpdateJob }) {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: interviewData } = allQuery(job?._id);
+  const [isEditing, setIsEditing] = useState(false);
   const tabs = ["Overview", "Interview", "Contacts", "Notes"];
-
+  if (isEditing) {
+    return (
+      <EditApplicationPanel
+        job={job}
+        onClose={() => setIsEditing(false)}
+        onUpdate={onUpdateJob}
+      />
+    );
+  }
   return (
     <div className="w-full h-full bg-[#161B22] border-l border-white/10 flex flex-col">
       <div className="flex items-start justify-between p-4 border-b border-white/10">
@@ -174,7 +184,10 @@ export function DetailPanel({ job, onClose }) {
               ))}
             </div>
 
-            <button className="w-full flex items-center justify-center cursor-pointer gap-2 bg-[#F0A500] text-[#0D1117] rounded-lg py-3 text-[14px] hover:opacity-90 transition-opacity mt-4">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="w-full flex items-center justify-center cursor-pointer gap-2 bg-[#F0A500] text-[#0D1117] rounded-lg py-3 text-[14px] hover:opacity-90 transition-opacity mt-4"
+            >
               Edit Application
             </button>
           </div>

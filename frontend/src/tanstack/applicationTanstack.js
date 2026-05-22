@@ -24,6 +24,23 @@ export const createMutate = () => {
     },
   });
 };
+export const updateMutate = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data, id }) => update(data, id),
+    onSuccess: (response) => {
+      if (response.ok) {
+        toast.success(response.message);
+        queryClient.invalidateQueries(["applications"]);
+      } else {
+        toast.error(response.message);
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+};
 
 export const updateStatusMutate = () => {
   const queryClient = useQueryClient();

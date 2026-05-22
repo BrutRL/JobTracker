@@ -48,42 +48,36 @@ export const create = async (req, res) => {
 };
 
 export const update = async (req, res) => {
-  const { id } = req.params;
-  const {
-    company,
-    role,
-    status,
-    location,
-    jobUrl,
-    salaryMin,
-    salaryMax,
-    notes,
-    tags,
-  } = req.body;
-  const resumePath = req.file.filename;
-  await Application.findByIdAndUpdate(
-    id,
-    {
-      userId: req.userId,
-      company: company,
-      role: role,
-      status: status,
-      location: location,
-      jobUrl: jobUrl,
-      salaryMin: salaryMin,
-      salaryMax: salaryMax,
-      notes: notes,
-      resumeUrl: resumePath,
-      tags: tags,
-    },
-    {
-      new: true,
-    },
-  );
-  res
-    .status(201)
-    .json({ ok: true, message: `Application Updated Successfully` });
   try {
+    const { id } = req.params;
+    const {
+      company,
+      role,
+      status,
+      location,
+      jobUrl,
+      salaryMin,
+      salaryMax,
+      notes,
+      tags,
+    } = req.body;
+
+    const updateFields = {};
+    if (company) updateFields.company = company;
+    if (role) updateFields.role = role;
+    if (status) updateFields.status = status;
+    if (location) updateFields.location = location;
+    if (jobUrl) updateFields.jobUrl = jobUrl;
+    if (salaryMin) updateFields.salaryMin = salaryMin;
+    if (salaryMax) updateFields.salaryMax = salaryMax;
+    if (notes) updateFields.notes = notes;
+    if (tags) updateFields.tags = tags;
+    if (req.file) updateFields.resumeUrl = req.file.filename;
+
+    await Application.findByIdAndUpdate(id, updateFields, { new: true });
+    res
+      .status(200)
+      .json({ ok: true, message: "Application Updated Successfully" });
   } catch (error) {
     res.status(400).json({ ok: false, error: error.message });
   }

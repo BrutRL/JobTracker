@@ -131,10 +131,10 @@ export default function Reminder() {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => dismissReminder.mutate(reminder._id)}
-                    className="text-[#6E7681] hover:text-white text-[11px] px-2 py-1 rounded bg-[#21262D]"
+                    className="cursor-pointer text-[#6E7681] hover:text-white text-[11px] px-2 py-1 rounded bg-[#21262D]"
                   >
                     Dismiss
                   </button>
@@ -143,7 +143,7 @@ export default function Reminder() {
                       setDeleteId(reminder._id);
                       setShowDelete(true);
                     }}
-                    className="text-[#E05C6B] hover:opacity-80"
+                    className="cursor-pointer text-[#E05C6B] hover:opacity-80 hover:text-red-500"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -193,7 +193,7 @@ export default function Reminder() {
                     setDeleteId(reminder._id);
                     setShowDelete(true);
                   }}
-                  className="text-[#E05C6B] opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="text-[#E05C6B] opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity  hover:text-red-500 "
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

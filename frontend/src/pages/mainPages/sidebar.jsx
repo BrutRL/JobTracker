@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import { SidebarIcons } from "@/components/Sidebar";
-import { Navbar } from "../../components/Navbar";
+import { Navbar } from "../../components/navBar";
 import { AddJobModal } from "@/components/modal/addJobModal";
 function Sidebar() {
   const [jobs, setJobs] = useState([]);

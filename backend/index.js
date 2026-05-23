@@ -45,7 +45,7 @@ app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 
-// Routes
+// Routess
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/application", applicationRoutes);

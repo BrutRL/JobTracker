@@ -28,13 +28,7 @@ const DND_OPTIONS = {
     {
       id: "touch",
       backend: TouchBackend,
-      options: {
-        enableMouseEvents: true,
-        // 150ms is long enough to distinguish a scroll swipe
-        // from an intentional hold-to-drag, but short enough
-        // that dragging still feels responsive.
-        delayTouchStart: 150,
-      },
+      options: { enableMouseEvents: true },
       preview: true,
       transition: TouchTransition,
     },

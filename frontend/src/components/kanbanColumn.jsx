@@ -1,6 +1,5 @@
 import { useDrop } from "react-dnd";
-import { JobCard } from "./JobCard";
-
+import { JobCard } from "./jobCard";
 export function KanbanColumn({
   title,
   status,

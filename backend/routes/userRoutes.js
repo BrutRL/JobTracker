@@ -7,20 +7,9 @@ import {
 import { verifyToken } from "../middleware/verifyToken.js";
 import { profileUpdateLimiter } from "../middleware/rateLimiter.js";
 import express from "express";
-import multer from "multer";
+import { uploadAvatar } from "../middleware/avatarFileValidator.js";
+import { validateProfileUpdate } from "../middleware/validate.js";
 const userRoutes = express.Router();
-
-export const avatarStorage = multer.diskStorage({
-  destination: "./public/avatar",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const uploadAvatar = multer({
-  storage: avatarStorage,
-  limits: { fileSize: 1 * 1024 * 1024 },
-});
 
 userRoutes.get("/specific", verifyToken, specific);
 userRoutes.put(
@@ -28,6 +17,7 @@ userRoutes.put(
   verifyToken,
   uploadAvatar.single("avatarPath"),
   profileUpdateLimiter,
+  // validateProfileUpdate,
   update,
 );
 userRoutes.patch("/email_reminder", verifyToken, updateEmailReminder);

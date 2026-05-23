@@ -1,4 +1,5 @@
 import { useDrag } from "react-dnd";
+import { X, AlertCircle } from "lucide-react";
 export function JobCard({ job, onClick, isToday }) {
   const [{ isDragging }, drag] = useDrag({
     type: "job",
@@ -7,6 +8,17 @@ export function JobCard({ job, onClick, isToday }) {
       isDragging: monitor.isDragging(),
     }),
   });
+
+  const needsFollowUp = () => {
+    if (job.status !== "applied") return false;
+    const appliedDate = new Date(job.appliedAt);
+    const today = new Date();
+    const diffDays = Math.floor((today - appliedDate) / (1000 * 60 * 60 * 24));
+    return diffDays >= 7;
+  };
+
+  const followUp = needsFollowUp();
+
   return (
     <div
       ref={drag}
@@ -26,6 +38,7 @@ export function JobCard({ job, onClick, isToday }) {
           <div className="w-2 h-2 rounded-full bg-[#F0A500] animate-pulse flex-shrink-0 mt-1" />
         )}
       </div>
+
       <div className="flex flex-wrap gap-1">
         {(Array.isArray(job.tags) ? job.tags : []).map((tag, id) => (
           <span
@@ -36,13 +49,27 @@ export function JobCard({ job, onClick, isToday }) {
           </span>
         ))}
       </div>
-      <div className="text-[11px] text-[#6E7681] mt-2 pl-1">
-        {job.appliedDate &&
-          new Date(job.appliedDate).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          })}
-        {isToday && <span className="ml-2 text-[#F0A500]">Today</span>}
+
+      <div className="flex items-center justify-between mt-2">
+        <div className="text-[11px] text-[#6E7681] pl-1">
+          {job.appliedDate &&
+            new Date(job.appliedDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}
+          {isToday && <span className="ml-2 text-[#F0A500]">Today</span>}
+        </div>
+
+        {followUp && (
+          <div
+            className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full"
+            style={{ backgroundColor: "#4A90D920", color: "#4A90D9" }}
+            title="No response in 7+ days. Consider following up."
+          >
+            <AlertCircle className="w-3 h-3" />
+            Follow up
+          </div>
+        )}
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ export function Navbar({ onAddJob }) {
         </div>
 
         {/* Center: Desktop nav */}
-        <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+        {/* <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
           {navItems.map((item) => (
             <button
               key={item.path}
@@ -79,7 +79,7 @@ export function Navbar({ onAddJob }) {
               {item.label}
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* Right: Add Job + Profile */}
         <div className="flex items-center gap-2 ml-auto">

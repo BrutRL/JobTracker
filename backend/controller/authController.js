@@ -63,12 +63,12 @@ export const googleRegisterCallback = async (req, res) => {
     fs.writeFileSync(avatarPath, buffer);
 
     const randomPassword = crypto.randomBytes(32).toString("hex");
-
+    const hashPassword = await bcrypt.hash(randomPassword, 10);
     const user = await User.create({
       name: data.name,
       email: data.email,
       avatar: filename,
-      password: randomPassword,
+      password: hashPassword,
     });
     const token = jwt.sign(
       {
@@ -179,7 +179,6 @@ export const login = async (req, res) => {
     res.status(200).json({
       ok: true,
       message: `Log in Successfully`,
-      token: token,
     });
   } catch (error) {
     res.status(400).json({ ok: false, error: error.message });
@@ -189,15 +188,13 @@ export const requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ ok: false, message: "User not found" });
-    }
 
-    await transporter.sendMail({
-      from: `"JobQuest" <${process.env.EMAIL_USER}>`,
-      to: user.email,
-      subject: "Reset Your Password - JobQuest",
-      html: `
+    if (user) {
+      await transporter.sendMail({
+        from: `"JobQuest" <${process.env.EMAIL_USER}>`,
+        to: user.email,
+        subject: "Reset Your Password - JobQuest",
+        html: `
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0D1117; padding:20px;">
           <tr>
             <td align="center">
@@ -234,7 +231,8 @@ export const requestPasswordReset = async (req, res) => {
           </tr>
         </table>
       `,
-    });
+      });
+    }
 
     res.status(200).json({
       ok: true,

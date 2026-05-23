@@ -21,13 +21,15 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "googleapis": "^171.4.0",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.1",
     "multer": "^2.1.1",
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
     "nodemailer": "^8.0.7",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "pdfkit": "^0.18.0"
   },
   "devDependencies": {
     "@express-rate-limit/tsconfig": "^1.0.2",

@@ -11,6 +11,10 @@ import {
   Cell,
 } from "recharts";
 import DashboardSkeleton from "@/components/dashboardSkeleton";
+import { exportTanstack } from "@/tanstack/exportTanstack";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Download } from "lucide-react";
 const STATUS_COLORS = {
   wishlist: "#6E7681",
   applied: "#4A90D9",
@@ -36,6 +40,8 @@ const TAG_COLORS = [
 
 export default function Dashboard() {
   const { data: analyticsData, isLoading } = all();
+  const [exporting, setExporting] = useState(false);
+  const { refetch } = exportTanstack();
   const d = analyticsData?.data;
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -50,9 +56,29 @@ export default function Dashboard() {
     0,
   );
 
+  const exportDataFn = async () => {
+    setExporting(true);
+    try {
+      await refetch();
+    } catch (error) {
+      toast.error("Failed to export PDF");
+    } finally {
+      setExporting(false);
+    }
+  };
   return (
     <div className="h-full overflow-y-auto p-4 md:p-6 bg-[#0D1117]">
-      <h1 className="text-[26px] text-white mb-6">Dashboard</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-[26px] text-white">Dashboard</h1>
+        <button
+          onClick={exportDataFn}
+          disabled={exporting}
+          className="flex items-center gap-2 bg-[#161B22] border border-white/10 text-[#6E7681] hover:text-white px-4 py-2 rounded-lg text-[13px] transition-colors disabled:opacity-50"
+        >
+          <Download className="w-4 h-4" />
+          {exporting ? "Exporting..." : "Export PDF"}
+        </button>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {[

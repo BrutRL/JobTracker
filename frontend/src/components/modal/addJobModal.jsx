@@ -6,11 +6,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { createMutate } from "@/tanstack/applicationTanstack";
 import { Spinner } from "../ui/spinner";
 export function AddJobModal({ open, onOpenChange }) {
   const create = createMutate();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     company: "",
     role: "",
@@ -49,48 +50,12 @@ export function AddJobModal({ open, onOpenChange }) {
           jobUrl: "",
           tags: "",
           notes: "",
+          resumePath: "",
         });
+        if (fileInputRef.current) fileInputRef.current.value = "";
       },
     });
   };
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   onSave({
-  //     company: formData.company,
-  //     role: formData.role,
-  //     status: formData.status,
-  //     location: formData.location,
-  //     salaryMin: formData.salaryMin ? parseInt(formData.salaryMin) : undefined,
-  //     salaryMax: formData.salaryMax ? parseInt(formData.salaryMax) : undefined,
-  //     jobUrl: formData.jobUrl || undefined,
-  //     tags: formData.tags
-  //       .split(",")
-  //       .map((t) => t.trim())
-  //       .filter(Boolean),
-  //     notes: formData.notes || undefined,
-  //     appliedDate: new Date().toISOString().split("T")[0],
-  //     timeline: [
-  //       {
-  //         id: `t${Date.now()}`,
-  //         date: new Date().toISOString().split("T")[0],
-  //         type: "Applied",
-  //         title: "Applied",
-  //       },
-  //     ],
-  //     contacts: [],
-  //   });
-  //   setFormData({
-  //     company: "",
-  //     role: "",
-  //     status: "applied",
-  //     location: "Quezon City, PH",
-  //     salaryMin: "",
-  //     salaryMax: "",
-  //     jobUrl: "",
-  //     tags: "",
-  //     notes: "",
-  //   });
-  // };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -210,6 +175,7 @@ export function AddJobModal({ open, onOpenChange }) {
               Resume (PDF ONLY)
             </label>
             <Input
+              ref={fileInputRef}
               type="file"
               name="resumePath"
               onChange={handleChange}

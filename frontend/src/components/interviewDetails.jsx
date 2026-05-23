@@ -9,6 +9,7 @@ import {
 import InterviewDeleteModal from "./modal/interviewDeleteModal";
 import InterviewUpdateModal from "./modal/interviewUpdateModal";
 import { Spinner } from "./ui/spinner";
+import InterviewPrep from "./interviewPrep";
 export default function InterviewDetails({ job }) {
   const { data: interviewData } = allQuery(job?._id);
   const [showDelete, setShowDelete] = useState(false);
@@ -172,7 +173,9 @@ export default function InterviewDetails({ job }) {
         <Plus className="w-4 h-4" />
         Log Interview
       </button>
-
+      <div className="mt-4 border-t border-white/10 pt-4">
+        <InterviewPrep job={job} />
+      </div>
       {showLogModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <form

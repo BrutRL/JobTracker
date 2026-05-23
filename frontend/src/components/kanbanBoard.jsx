@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
+import {
+  MultiBackend,
+  TouchTransition,
+  MouseTransition,
+} from "react-dnd-multi-backend";
 import { KanbanColumn } from "./kanbanColumn";
 import { DetailPanel } from "./detailsPanel";
+
 const COLUMNS = [
   { title: "Wishlist", status: "wishlist", color: "#6E7681" },
   { title: "Applied", status: "applied", color: "#4A90D9" },
@@ -11,10 +18,28 @@ const COLUMNS = [
   { title: "Rejected", status: "rejected", color: "#E05C6B" },
 ];
 
+const DND_OPTIONS = {
+  backends: [
+    {
+      id: "html5",
+      backend: HTML5Backend,
+      transition: MouseTransition,
+    },
+    {
+      id: "touch",
+      backend: TouchBackend,
+      options: { enableMouseEvents: true },
+      preview: true,
+      transition: TouchTransition,
+    },
+  ],
+};
+
 export function KanbanBoard({ jobs, onJobUpdate, onJobMove }) {
   const [selectedJob, setSelectedJob] = useState(null);
+
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={MultiBackend} options={DND_OPTIONS}>
       <div
         className="flex flex-1 overflow-hidden"
         style={{ height: "calc(100vh - 56px)" }}

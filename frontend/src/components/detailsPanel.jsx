@@ -73,7 +73,34 @@ export function DetailPanel({ job, onClose, onUpdateJob }) {
                 {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
               </span>
             </div>
-
+            {job.status === "applied" &&
+              Math.floor(
+                (new Date() - new Date(job.appliedAt)) / (1000 * 60 * 60 * 24),
+              ) >= 7 && (
+                <div
+                  className="flex items-start gap-3 p-3 rounded-lg"
+                  style={{
+                    backgroundColor: "#4A90D915",
+                    border: "0.5px solid #4A90D930",
+                  }}
+                >
+                  <AlertCircle className="w-4 h-4 text-[#4A90D9] flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-[#4A90D9] text-[13px]">
+                      Consider following up
+                    </p>
+                    <p className="text-[#6E7681] text-[11px] mt-0.5">
+                      It's been{" "}
+                      {Math.floor(
+                        (new Date() - new Date(job.appliedAt)) /
+                          (1000 * 60 * 60 * 24),
+                      )}{" "}
+                      days since you applied. A polite follow-up email can
+                      increase your chances.
+                    </p>
+                  </div>
+                </div>
+              )}
             {(job.salaryMin || job.salaryMax) && (
               <div>
                 <p className="text-[#6E7681] text-[12px] mb-1">Salary Range</p>

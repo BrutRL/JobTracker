@@ -10,10 +10,15 @@ import contactRoutes from "./routes/contactRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import reminderRoutes from "./routes/reminderRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+import exportRoutes from "./routes/exportRoutes.js";
 import agenda from "./config/agenda.js";
 import cors from "cors";
+import helmet from "helmet";
 import { registerJobs } from "./jobs/reminderJob.js";
+import { globalLimiter } from "./middleware/rateLimiter.js";
 import rateLimit from "express-rate-limit";
+import { errorFileValidator } from "./middleware/errorHandlerFileValidator.js";
 const app = express();
 const PORT = 3000;
 
@@ -35,20 +40,10 @@ app.use(
     credentials: true,
   }),
 );
-const globalLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 1000,
-  handler: (req, res, next, options) => {
-    res.status(options.statusCode).json({
-      message: "Too many requests",
-      redirect: `${process.env.FRONT_END_URL}/limit_page`,
-    });
-  },
-});
-
 app.use(globalLimiter);
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(helmet());
 
 // Routes
 app.use("/auth", authRoutes);
@@ -58,7 +53,11 @@ app.use("/contact", contactRoutes);
 app.use("/interview", interviewRoutes);
 app.use("/reminder", reminderRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/ai", aiRoutes);
+app.use("/export", exportRoutes);
 
+// file size limit validator
+app.use(errorFileValidator);
 process.on("SIGTERM", async () => {
   await agenda.stop();
   process.exit(0);

@@ -17,7 +17,7 @@ export const updateMutate = () => {
         toast.success(response.message);
         queryClient.invalidateQueries(["user"]);
       } else {
-        toast.error(response.error);
+        toast.error(response.error ?? response.message);
       }
     },
     onError: (err) => {

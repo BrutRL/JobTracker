@@ -9,19 +9,12 @@ import {
 } from "../controller/applicationController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 import { validateApplication } from "../middleware/validate.js";
-import { applicationLimiter } from "../middleware/rateLimiter.js";
+import {
+  applicationLimiter,
+  updateApplicationLimiter,
+} from "../middleware/rateLimiter.js";
+import { uploadResume } from "../middleware/resumeFileValidator.js";
 const applicationRoutes = express.Router();
-export const resumeStorage = multer.diskStorage({
-  destination: "./public/resume",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const uploadResume = multer({
-  storage: resumeStorage,
-  limits: { fileSize: 1 * 1024 * 1024 },
-});
 
 applicationRoutes.get("/all", verifyToken, all);
 applicationRoutes.post(
@@ -37,6 +30,7 @@ applicationRoutes.put(
   verifyToken,
   uploadResume.single("resumePath"),
   validateApplication,
+  updateApplicationLimiter,
   update,
 );
 applicationRoutes.patch("/status/:id", verifyToken, updateStatus);

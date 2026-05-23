@@ -24,19 +24,9 @@ import {
   validateLogin,
   validateResetPass,
 } from "../middleware/validate.js";
+import { uploadAvatar } from "../middleware/avatarFileValidator.js";
 import { auth } from "googleapis/build/src/apis/abusiveexperiencereport/index.js";
 const authRoutes = express.Router();
-export const avatarStorage = multer.diskStorage({
-  destination: "./public/avatar",
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const uploadAvatar = multer({
-  storage: avatarStorage,
-  limits: { fileSize: 1 * 1024 * 1024 },
-});
 
 authRoutes.post("/login", validateLogin, loginLimiter, login);
 authRoutes.post("/request_reset_pass", resetEmailLimiter, requestPasswordReset);

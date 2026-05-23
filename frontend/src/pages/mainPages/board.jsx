@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { allQuery, updateStatusMutate } from "@/tanstack/applicationTanstack";
-import { KanbanBoard } from "../../components/KanbanBoard";
+import { KanbanBoard } from "../../components/kanbanBoard";
 import BoardSkeleton from "@/components/boardSkeletonLoading";
 function Board() {
   const { setJobs: setLayoutJobs } = useOutletContext();

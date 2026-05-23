@@ -4,13 +4,22 @@ import "react-loading-skeleton/dist/skeleton.css";
 export default function DashboardSkeleton() {
   return (
     <div className="h-full overflow-y-auto p-4 md:p-6 bg-[#0D1117]">
-      <Skeleton
-        width={160}
-        height={28}
-        baseColor="#21262D"
-        highlightColor="#30363D"
-        className="mb-6"
-      />
+      <div className="flex justify-between">
+        <Skeleton
+          width={160}
+          height={28}
+          baseColor="#21262D"
+          highlightColor="#30363D"
+          className="mb-6"
+        />
+        <Skeleton
+          width={160}
+          height={28}
+          baseColor="#21262D"
+          highlightColor="#30363D"
+          className="mb-6"
+        />
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {Array.from({ length: 4 }).map((_, i) => (

@@ -28,7 +28,16 @@ const DND_OPTIONS = {
     {
       id: "touch",
       backend: TouchBackend,
-      options: { enableMouseEvents: true },
+      options: {
+        enableMouseEvents: true,
+        // Require a 200ms long-press before a drag starts.
+        // This gives scroll gestures time to be recognized first
+        // and prevents accidental drags when the user is just scrolling.
+        delayTouchStart: 200,
+        // Ignore movement under 8px so small finger tremors
+        // don't accidentally start a drag either.
+        touchSlop: 8,
+      },
       preview: true,
       transition: TouchTransition,
     },

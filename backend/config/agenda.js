@@ -1,5 +1,3 @@
-import dns from "dns";
-dns.setDefaultResultOrder("ipv4first");
 import dotenv from "dotenv";
 dotenv.config();
 import { Agenda } from "agenda";
@@ -8,9 +6,9 @@ import { MongoBackend } from "@agendajs/mongo-backend";
 const agenda = new Agenda({
   backend: new MongoBackend({
     address: process.env.MONGO_URL,
-    collection: "agendaJobs",
+    collection: "agendaJobs", // rename from "jobs" to avoid conflicts
   }),
-  processEvery: "30 seconds",
+  processEvery: "30 seconds", // increase from 10s to reduce DB load
   maxConcurrency: 5,
   defaultLockLifetime: 10000,
 });

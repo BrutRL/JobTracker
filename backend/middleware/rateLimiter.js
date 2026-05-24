@@ -14,6 +14,7 @@ export const loginLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 export const resetEmailLimiter = rateLimit({
   windowMs: 20 * 60 * 1000, // 20 minutes
@@ -21,6 +22,7 @@ export const resetEmailLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 export const resetPassLimiter = rateLimit({
   windowMs: 20 * 60 * 1000, // 20 minutes
@@ -28,6 +30,7 @@ export const resetPassLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 export const registerLimiter = rateLimit({
@@ -36,6 +39,7 @@ export const registerLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 export const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -43,6 +47,7 @@ export const aiLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 export const profileUpdateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -50,6 +55,7 @@ export const profileUpdateLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 export const applicationLimiter = rateLimit({
@@ -58,6 +64,7 @@ export const applicationLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 export const contactLimiter = rateLimit({
@@ -66,6 +73,7 @@ export const contactLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 export const interviewLimiter = rateLimit({
@@ -74,6 +82,7 @@ export const interviewLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 export const reminderLimiter = rateLimit({
@@ -82,6 +91,7 @@ export const reminderLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 export const updateApplicationLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
@@ -89,10 +99,12 @@ export const updateApplicationLimiter = rateLimit({
   handler: jsonHandler,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 export const globalLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3000,
+  validate: { xForwardedForHeader: false },
   handler: (req, res, next, options) => {
     res.status(options.statusCode).json({
       message: "Too many requests",

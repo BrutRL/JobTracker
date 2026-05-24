@@ -1,7 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-import dns from "dns";
-dns.setDefaultResultOrder("ipv4first");
 import express, { urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import { DbConnection } from "./config/dbConnection.js";

@@ -59,7 +59,7 @@ export const reqResetPassMutate = () => {
 };
 export const resetPassMutate = () => {
   return useMutation({
-    mutationFn: ({ data, id }) => reset_pass(data, id),
+    mutationFn: ({ password, token }) => reset_pass({ password, token }),
     onSuccess: (response) => {
       if (response.ok) {
         toast.success(response.message);

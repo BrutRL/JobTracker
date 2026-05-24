@@ -35,7 +35,7 @@ export function registerJobs(agenda) {
       await transporter.sendMail({
         from: `"JobQuest" <${process.env.EMAIL_USER}>`,
         to: user.email,
-        subject: `Reminder: ${app.company} — ${app.role}`,
+        subject: `Reminder Job Application for: ${app.company} — ${app.role}`,
         html: `
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0D1117; padding:20px;">
             <tr>
@@ -69,6 +69,20 @@ export function registerJobs(agenda) {
                         <tr>
                           <td style="font-size:14px; color:#8B949E;">Type</td>
                           <td style="font-size:14px; color:#E6EDF3;">${reminder.type}</td>
+                        </tr>
+                          <tr>
+                          <td style="font-size:14px; color:#8B949E;">Scheduled</td>
+                         <td style="font-size:14px; color:#E6EDF3;">
+                            ${reminder.triggerAt.toLocaleString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                              hour: "numeric",
+                              minute: "2-digit",
+                              hour12: true,
+                            })}
+                          </td>
+
                         </tr>
                       </table>
                       <div style="text-align:center; margin:30px 0;">

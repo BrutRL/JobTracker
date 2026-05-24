@@ -187,7 +187,7 @@ export function AddJobModal({ open, onOpenChange }) {
 
           <div>
             <label className="text-[13px] text-[#6E7681] mb-2 block">
-              Tags (comma separated)
+              Skills Needed (comma separated)
             </label>
             <Input
               value={formData.tags}

@@ -18,6 +18,7 @@ function Profile() {
     avatarPath: user?.avatar ?? "",
     password: "",
     confirm_password: "",
+    skills: user?.skills?.join(", ") ?? "",
   });
   const update = updateMutate();
   const destroy = deleteMutate();
@@ -174,6 +175,22 @@ function Profile() {
                         )}
                       </span>
                     </div>
+                  </div>
+                  <div>
+                    <label className="text-[13px] text-[#6E7681] mb-2 block">
+                      Your Skills
+                    </label>
+                    <textarea
+                      name="skills"
+                      value={formData.skills}
+                      onChange={handleChange}
+                      placeholder="React, TypeScript, Node.js, MongoDB..."
+                      className="w-full h-[80px] bg-[#21262D] border-none rounded-lg p-3 text-white text-[13px] placeholder:text-[#6E7681] resize-none focus:outline-none focus:ring-1 focus:ring-[#F0A500]"
+                    />
+                    <p className="text-[#6E7681] text-[11px] mt-1">
+                      Comma separated. Used by AI analyzer to match your skills
+                      against job descriptions.
+                    </p>
                   </div>
                   <Button
                     disabled={update.isPending}

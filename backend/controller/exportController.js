@@ -2,295 +2,421 @@ import PDFDocument from "pdfkit";
 import { Application } from "../model/applicationModel.js";
 import { User } from "../model/userModel.js";
 
+// ── palette (matches JobQuest UI) ────────────────────────────────────────────
+const C = {
+  bg: "#0D1117",
+  surface: "#161B22",
+  elevated: "#21262D",
+  border: "#30363D",
+  amber: "#F0A500",
+  amberDim: "#F0A50030",
+  blue: "#4A90D9",
+  blueDim: "#4A90D920",
+  green: "#3DDC84",
+  greenDim: "#3DDC8420",
+  red: "#E05C6B",
+  redDim: "#E05C6B20",
+  white: "#E6EDF3",
+  muted: "#6E7681",
+};
+
+const STATUS = {
+  wishlist: { label: "Wishlist", color: C.muted, bg: C.elevated },
+  applied: { label: "Applied", color: C.blue, bg: "#1A2A3A" },
+  interview: { label: "Interview", color: C.amber, bg: "#2A2010" },
+  offer: { label: "Offer", color: C.green, bg: "#0F2A1A" },
+  rejected: { label: "Rejected", color: C.red, bg: "#2A1218" },
+};
+
+const isPlaceholder = (role) => {
+  if (!role) return true;
+  const words = role.trim().split(/\s+/);
+  const allLower = words.every(
+    (w) => w === w.toLowerCase() && /^[a-z]+$/.test(w),
+  );
+  return allLower && words.length >= 3;
+};
+
+const isValidSalary = (min, max) =>
+  (min != null && min >= 5000) || (max != null && max >= 5000);
+
+const formatSalary = (min, max) => {
+  if (!isValidSalary(min, max)) return null;
+  const fmt = (v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}`);
+  if (min && max && min !== max) return `P${fmt(min)} - P${fmt(max)}`;
+  if (min) return `P${fmt(min)}`;
+  if (max) return `P${fmt(max)}`;
+  return null;
+};
+
+const rrect = (doc, x, y, w, h, r, fillColor, strokeColor) => {
+  doc.save();
+  if (fillColor) {
+    doc.roundedRect(x, y, w, h, r).fillColor(fillColor).fill();
+  }
+  if (strokeColor) {
+    doc
+      .roundedRect(x, y, w, h, r)
+      .lineWidth(0.5)
+      .strokeColor(strokeColor)
+      .stroke();
+  }
+  doc.restore();
+};
+
 export const exportPDF = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const [user, applications] = await Promise.all([
+    const [user, allApps] = await Promise.all([
       User.findById(userId).select("name email"),
       Application.find({ userId }).sort({ appliedAt: -1 }),
     ]);
 
+    const applications = allApps.filter(
+      (a) => a.company && a.role && !isPlaceholder(a.role),
+    );
+
     const total = applications.length;
+    const interviews = applications.filter(
+      (a) => a.status === "interview",
+    ).length;
+    const offers = applications.filter((a) => a.status === "offer").length;
     const responded = applications.filter(
       (a) => !["wishlist", "applied"].includes(a.status),
     ).length;
     const responseRate = total > 0 ? Math.round((responded / total) * 100) : 0;
-    const activeInterviews = applications.filter(
-      (a) => a.status === "interview",
-    ).length;
-    const offers = applications.filter((a) => a.status === "offer").length;
 
-    const statusBreakdown = applications.reduce(
-      (acc, a) => ({ ...acc, [a.status]: (acc[a.status] || 0) + 1 }),
-      { wishlist: 0, applied: 0, interview: 0, offer: 0, rejected: 0 },
-    );
-
-    const doc = new PDFDocument({ margin: 50, size: "A4" });
-
+    const doc = new PDFDocument({ margin: 0, size: "A4" });
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="jobquest-report.pdf"`,
     );
-
     doc.pipe(res);
 
-    const W = doc.page.width - 100;
-    const gray = "#6b7280";
-    const dark = "#1a1a1a";
-    const light = "#f9fafb";
-    const border = "#e5e7eb";
+    const PW = doc.page.width;
+    const PH = doc.page.height;
+    const ML = 44;
+    const MR = 44;
+    const CW = PW - ML - MR;
 
-    // ── header ──────────────────────────────────────────
+    // full dark background
+    doc.rect(0, 0, PW, PH).fillColor(C.bg).fill();
+
+    // ── header ───────────────────────────────────────────
+    doc.rect(0, 0, PW, 76).fillColor(C.surface).fill();
+    doc.rect(0, 76, PW, 1).fillColor(C.border).fill();
+    doc.rect(0, 0, 3, 76).fillColor(C.amber).fill();
+
     doc
       .fontSize(20)
       .font("Helvetica-Bold")
-      .fillColor(dark)
-      .text("JobQuest", 50, 50);
+      .fillColor(C.amber)
+      .text("JobQuest", ML, 20);
     doc
-      .fontSize(11)
+      .fontSize(9)
       .font("Helvetica")
-      .fillColor(gray)
-      .text("Job Application Report", 50, 75);
+      .fillColor(C.muted)
+      .text("Application Activity Report", ML, 44);
 
-    const date = new Date().toLocaleDateString("en-US", {
+    const dateStr = new Date().toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
     });
     doc
       .fontSize(10)
-      .fillColor(gray)
-      .text(`${date}`, 50, 50, { align: "right" })
-      .text(user.name, 50, 63, { align: "right" })
-      .text(user.email, 50, 76, { align: "right" });
-
-    doc
-      .moveTo(50, 100)
-      .lineTo(50 + W, 100)
-      .lineWidth(2)
-      .strokeColor(dark)
-      .stroke();
-
-    // ── summary stats ────────────────────────────────────
-    let y = 115;
-    doc
-      .fontSize(9)
       .font("Helvetica-Bold")
-      .fillColor(gray)
-      .text("SUMMARY", 50, y);
+      .fillColor(C.white)
+      .text(user.name.toUpperCase(), 0, 20, { align: "right", width: PW - MR });
+    doc
+      .fontSize(8.5)
+      .font("Helvetica")
+      .fillColor(C.muted)
+      .text(user.email, 0, 36, { align: "right", width: PW - MR })
+      .text(dateStr, 0, 50, { align: "right", width: PW - MR });
 
-    y += 14;
-    const statW = W / 4;
-    const stats = [
-      { label: "Total Applied", value: total, sub: "applications" },
+    // ── summary cards ─────────────────────────────────────
+    let y = 94;
+
+    doc
+      .fontSize(7)
+      .font("Helvetica-Bold")
+      .fillColor(C.muted)
+      .text("SUMMARY", ML, y, { characterSpacing: 1 });
+    y += 11;
+
+    const cards = [
+      { label: "Applications\nSubmitted", value: String(total), color: C.blue },
+      { label: "Response\nRate", value: `${responseRate}%`, color: C.blue },
       {
-        label: "Response Rate",
-        value: `${responseRate}%`,
-        sub: "of applications",
+        label: "Interviews\nin Progress",
+        value: String(interviews),
+        color: C.amber,
       },
-      {
-        label: "Active Interviews",
-        value: activeInterviews,
-        sub: "in progress",
-      },
-      { label: "Offers", value: offers, sub: "received" },
+      { label: "Offers\nReceived", value: String(offers), color: C.green },
     ];
 
-    doc.rect(50, y, W, 70).fillColor(light).fill();
-    doc.rect(50, y, W, 70).lineWidth(0.5).strokeColor(border).stroke();
+    const cardW = (CW - 9) / 4;
+    const cardH = 66;
 
-    stats.forEach((stat, i) => {
-      const x = 50 + i * statW;
-      if (i > 0) {
-        doc
-          .moveTo(x, y)
-          .lineTo(x, y + 70)
-          .lineWidth(0.5)
-          .strokeColor(border)
-          .stroke();
-      }
+    cards.forEach((card, i) => {
+      const cx = ML + i * (cardW + 3);
+      rrect(doc, cx, y, cardW, cardH, 5, C.surface, C.border);
+      doc.rect(cx, y, cardW, 2).fillColor(card.color).fill();
       doc
-        .fontSize(9)
-        .font("Helvetica")
-        .fillColor(gray)
-        .text(stat.label, x + 10, y + 10);
-      doc
-        .fontSize(20)
+        .fontSize(24)
         .font("Helvetica-Bold")
-        .fillColor(dark)
-        .text(String(stat.value), x + 10, y + 24);
+        .fillColor(card.color)
+        .text(card.value, cx + 10, y + 10, { width: cardW - 20 });
       doc
-        .fontSize(9)
+        .fontSize(8)
         .font("Helvetica")
-        .fillColor(gray)
-        .text(stat.sub, x + 10, y + 50);
+        .fillColor(C.muted)
+        .text(card.label, cx + 10, y + 40, { width: cardW - 20, lineGap: 1 });
     });
 
-    // ── status breakdown ─────────────────────────────────
-    y += 85;
-    doc
-      .fontSize(9)
-      .font("Helvetica-Bold")
-      .fillColor(gray)
-      .text("STATUS BREAKDOWN", 50, y);
+    y += cardH + 14;
 
-    y += 14;
-    const statuses = ["wishlist", "applied", "interview", "offer", "rejected"];
-    const breakW = W / 5;
+    // ── highlights bar ────────────────────────────────────
+    if (offers > 0 || interviews > 0) {
+      rrect(doc, ML, y, CW, 28, 5, C.surface, C.border);
+      doc.rect(ML, y, 3, 28).fillColor(C.amber).fill();
+
+      let msg = "";
+      if (offers > 0 && interviews > 0)
+        msg = `${offers} offer${offers > 1 ? "s" : ""} received  +  ${interviews} active interview${interviews > 1 ? "s" : ""} in progress`;
+      else if (offers > 0)
+        msg = `${offers} offer${offers > 1 ? "s" : ""} received`;
+      else
+        msg = `${interviews} active interview${interviews > 1 ? "s" : ""} in progress`;
+
+      doc
+        .fontSize(9)
+        .font("Helvetica-Bold")
+        .fillColor(C.amber)
+        .text(msg, ML + 12, y + 10, { width: CW - 20 });
+
+      y += 42;
+    }
+
+    // ── status breakdown ──────────────────────────────────
+    doc
+      .fontSize(7)
+      .font("Helvetica-Bold")
+      .fillColor(C.muted)
+      .text("STATUS BREAKDOWN", ML, y, { characterSpacing: 1 });
+    y += 11;
+
+    const statuses = ["applied", "interview", "offer", "wishlist", "rejected"];
+    const sbW = (CW - (statuses.length - 1) * 3) / statuses.length;
+    const sbH = 44;
 
     statuses.forEach((status, i) => {
-      const x = 50 + i * breakW;
+      const sx = ML + i * (sbW + 3);
+      const st = STATUS[status];
+      const count = applications.filter((a) => a.status === status).length;
+
+      rrect(doc, sx, y, sbW, sbH, 5, C.surface, C.border);
       doc
-        .rect(x + 2, y, breakW - 4, 48)
-        .lineWidth(0.5)
-        .strokeColor(border)
-        .stroke();
-      doc
-        .fontSize(16)
+        .fontSize(18)
         .font("Helvetica-Bold")
-        .fillColor(dark)
-        .text(String(statusBreakdown[status]), x + 2, y + 8, {
-          width: breakW - 4,
-          align: "center",
-        });
+        .fillColor(st.color)
+        .text(String(count), sx, y + 6, { width: sbW, align: "center" });
       doc
-        .fontSize(9)
+        .fontSize(7.5)
         .font("Helvetica")
-        .fillColor(gray)
-        .text(status.charAt(0).toUpperCase() + status.slice(1), x + 2, y + 30, {
-          width: breakW - 4,
-          align: "center",
-        });
+        .fillColor(C.muted)
+        .text(st.label, sx, y + 28, { width: sbW, align: "center" });
     });
 
-    // ── applications table ───────────────────────────────
-    y += 65;
+    y += sbH + 16;
+
+    // ── applications table ────────────────────────────────
     doc
-      .fontSize(9)
+      .fontSize(7)
       .font("Helvetica-Bold")
-      .fillColor(gray)
-      .text("APPLICATIONS", 50, y);
+      .fillColor(C.muted)
+      .text("APPLICATIONS", ML, y, { characterSpacing: 1 });
+    y += 11;
 
-    y += 14;
-
-    // Applied column is 80px wide to fit "May 21, 2026" on one line
     const cols = [
-      { label: "#", width: 25 },
-      { label: "Company", width: 105 },
-      { label: "Role", width: 125 },
-      { label: "Status", width: 65 },
-      { label: "Applied", width: 80 },
-      { label: "Salary Range", width: W - 400 },
+      { label: "#", w: 22, align: "center" },
+      { label: "Company", w: 112, align: "left" },
+      { label: "Role", w: 148, align: "left" },
+      { label: "Status", w: 70, align: "center" },
+      { label: "Applied", w: 78, align: "left" },
+      { label: "Salary", w: CW - 22 - 112 - 148 - 70 - 78, align: "left" },
     ];
 
-    // ── table header ─────────────────────────────────────
-    const headerH = 24;
-    doc.rect(50, y, W, headerH).fillColor(light).fill();
-    doc.rect(50, y, W, headerH).lineWidth(0.5).strokeColor(border).stroke();
+    const thH = 28;
+    rrect(doc, ML, y, CW, thH, 5, C.elevated, null);
 
-    let x = 50;
+    let hx = ML;
     cols.forEach((col) => {
       doc
-        .fontSize(9)
+        .fontSize(8.5)
         .font("Helvetica-Bold")
-        .fillColor(gray)
-        .text(col.label, x + 8, y + 8, { width: col.width - 8 });
-      x += col.width;
+        .fillColor(C.white)
+        .text(col.label, hx + 6, y + 10, {
+          width: col.w - 6,
+          align: col.align,
+        });
+      hx += col.w;
     });
+    y += thH;
 
-    y += headerH;
+    const FS = 8.5;
+    const PAD = 8;
+    const LINE_H = FS * 1.4;
 
-    // ── table rows ────────────────────────────────────────
-    // Estimate how many lines a string will wrap to inside a column
-    const estimateLines = (text, colWidth) => {
-      const avgCharW = 9 * 0.52; // font-size 9, Helvetica approximation
-      const usableWidth = colWidth - 12;
-      const charsPerLine = Math.max(1, Math.floor(usableWidth / avgCharW));
-      return Math.ceil(text.length / charsPerLine);
+    const estLines = (text, colW) => {
+      const cpl = Math.max(1, Math.floor((colW - 14) / (FS * 0.52)));
+      return Math.ceil(text.length / cpl);
     };
 
-    const lineH = 11; // height per line at font-size 9
-    const padV = 12; // total vertical padding (top + bottom)
-    const minRowH = 28;
+    const order = ["offer", "interview", "applied", "wishlist", "rejected"];
+    const sorted = [...applications].sort(
+      (a, b) => order.indexOf(a.status) - order.indexOf(b.status),
+    );
 
-    applications.forEach((app, index) => {
-      const salary =
-        app.salaryMin != null &&
-        app.salaryMin > 0 &&
-        app.salaryMax != null &&
-        app.salaryMax > 0
-          ? `${(app.salaryMin / 1000).toFixed(0)}k – ${(app.salaryMax / 1000).toFixed(0)}k`
-          : app.salaryMin != null && app.salaryMin > 0
-            ? `${(app.salaryMin / 1000).toFixed(0)}k`
-            : "—";
-
+    sorted.forEach((app, index) => {
+      const salary = formatSalary(app.salaryMin, app.salaryMax);
       const appliedDate = app.appliedAt
         ? new Date(app.appliedAt).toLocaleDateString("en-US", {
             month: "short",
             day: "numeric",
             year: "numeric",
           })
-        : "—";
+        : "-";
 
       const rowData = [
         String(index + 1),
         app.company,
         app.role,
-        app.status.charAt(0).toUpperCase() + app.status.slice(1),
+        STATUS[app.status]?.label ?? app.status,
         appliedDate,
-        salary,
+        salary ?? "-",
       ];
 
-      // Dynamic row height: grow to fit the tallest wrapping cell
       const maxLines = Math.max(
-        ...rowData.map((text, i) => estimateLines(text, cols[i].width)),
+        ...rowData.map((text, i) => estLines(text, cols[i].w)),
       );
-      const rowH = Math.max(minRowH, maxLines * lineH + padV);
+      const rowH = Math.max(30, maxLines * LINE_H + PAD * 2);
 
-      if (y > doc.page.height - 80) {
+      if (y + rowH > PH - 50) {
+        drawFooter(doc, PW, PH, ML, MR, C);
         doc.addPage();
-        y = 50;
+        doc.rect(0, 0, PW, PH).fillColor(C.bg).fill();
+        y = 44;
+
+        rrect(doc, ML, y, CW, thH, 5, C.elevated, null);
+        let rhx = ML;
+        cols.forEach((col) => {
+          doc
+            .fontSize(8.5)
+            .font("Helvetica-Bold")
+            .fillColor(C.white)
+            .text(col.label, rhx + 6, y + 10, {
+              width: col.w - 6,
+              align: col.align,
+            });
+          rhx += col.w;
+        });
+        y += thH;
       }
 
-      if (index % 2 === 0) {
-        doc.rect(50, y, W, rowH).fillColor("#fafafa").fill();
-      }
-      doc.rect(50, y, W, rowH).lineWidth(0.5).strokeColor("#f3f4f6").stroke();
+      const isRejected = app.status === "rejected";
+      const rowBg = index % 2 === 0 ? C.surface : C.elevated;
 
-      x = 50;
+      doc.rect(ML, y, CW, rowH).fillColor(rowBg).fill();
+      doc
+        .rect(ML, y + rowH - 0.5, CW, 0.5)
+        .fillColor(C.border)
+        .fill();
+
+      let rx = ML;
       rowData.forEach((text, i) => {
-        doc
-          .fontSize(9)
-          .font(i === 1 ? "Helvetica-Bold" : "Helvetica")
-          .fillColor(i === 0 ? gray : dark)
-          .text(text, x + 8, y + padV / 2, {
-            width: cols[i].width - 12,
-            ellipsis: false,
-          });
-        x += cols[i].width;
+        const col = cols[i];
+
+        if (i === 3) {
+          const st = STATUS[app.status] ?? {
+            color: C.muted,
+            bg: C.elevated,
+            label: text,
+          };
+          const pillW = col.w - 12;
+          const pillH = 17;
+          const px = rx + 6;
+          const py = y + (rowH - pillH) / 2;
+          rrect(
+            doc,
+            px,
+            py,
+            pillW,
+            pillH,
+            pillH / 2,
+            isRejected ? C.elevated : st.bg,
+            null,
+          );
+          doc
+            .fontSize(7.5)
+            .font("Helvetica-Bold")
+            .fillColor(isRejected ? C.muted : st.color)
+            .text(text, px, py + 5, { width: pillW, align: "center" });
+        } else {
+          const textColor =
+            i === 0
+              ? C.muted
+              : i === 1
+                ? isRejected
+                  ? C.muted
+                  : C.white
+                : isRejected
+                  ? C.muted
+                  : C.white;
+
+          doc
+            .fontSize(FS)
+            .font(i === 1 ? "Helvetica-Bold" : "Helvetica")
+            .fillColor(textColor)
+            .text(text, rx + 6, y + PAD, {
+              width: col.w - 12,
+              align: col.align,
+              ellipsis: true,
+            });
+        }
+        rx += col.w;
       });
 
       y += rowH;
     });
 
-    // ── footer ───────────────────────────────────────────
-    doc
-      .moveTo(50, y + 12)
-      .lineTo(50 + W, y + 12)
-      .lineWidth(0.5)
-      .strokeColor(border)
-      .stroke();
-    doc
-      .fontSize(9)
-      .font("Helvetica")
-      .fillColor(gray)
-      .text("JobQuest — Job Application Tracker", 50, y + 20)
-      .text("Page 1 of 1", 50, y + 20, { align: "right" });
-
+    drawFooter(doc, PW, PH, ML, MR, C);
     doc.end();
   } catch (error) {
     res.status(400).json({ ok: false, error: error.message });
   }
 };
+
+function drawFooter(doc, PW, PH, ML, MR, C) {
+  const fy = PH - 32;
+  doc
+    .rect(0, fy - 1, PW, PH - fy + 1)
+    .fillColor(C.surface)
+    .fill();
+  doc
+    .rect(0, fy - 1, PW, 1)
+    .fillColor(C.border)
+    .fill();
+  doc
+    .fontSize(8)
+    .font("Helvetica")
+    .fillColor(C.muted)
+    .text("JobQuest  —  Job Application Tracker", ML, fy + 10);
+  doc
+    .fontSize(8)
+    .fillColor(C.muted)
+    .text("Confidential", 0, fy + 10, { align: "right", width: PW - MR });
+}

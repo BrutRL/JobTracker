@@ -5,6 +5,7 @@ import { google } from "googleapis";
 import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
+
 import { transporter } from "../middleware/nodemailer.js";
 import crypto from "crypto";
 import getOauthClient from "../config/googleClient.js";
@@ -190,6 +191,13 @@ export const requestPasswordReset = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user) {
+      const token = crypto.randomBytes(32).toString("hex");
+
+      user.resetToken = crypto.createHash("sha256").update(token).digest("hex");
+      user.resetTokenExpiry = new Date(Date.now() + 1000 * 60 * 30);
+      await user.save();
+
+      const resetUrl = `${process.env.FRONT_END_URL}/reset_pass?token=${token}`;
       await transporter.sendMail({
         from: `"JobQuest" <${process.env.EMAIL_USER}>`,
         to: user.email,
@@ -211,7 +219,7 @@ export const requestPasswordReset = async (req, res) => {
                       We received a request to reset your password. Click the button below to proceed:
                     </p>
                     <div style="text-align:center; margin:30px 0;">
-                      <a href="${process.env.FRONT_END_URL}/reset_pass?email=${user.email}&id=${user._id}"
+                    <a href="${resetUrl}"
                          style="background-color:#F0A500; color:#0D1117; padding:12px 24px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block;">
                         Reset My Password
                       </a>
@@ -244,25 +252,31 @@ export const requestPasswordReset = async (req, res) => {
   }
 };
 export const resetPassword = async (req, res) => {
-  const { id } = req.params;
-  const { password } = req.body;
   try {
-    const hashPassword = await bcrypt.hash(password, 10);
-    const user = await User.findByIdAndUpdate(
-      id,
-      {
-        password: hashPassword,
-      },
-      {
-        new: true,
-      },
-    );
+    const { token, password } = req.body;
 
-    res
-      .status(200)
-      .json({ ok: true, message: `Password updated successfully` });
+    const hashed = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetToken: hashed,
+      resetTokenExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "Invalid or expired reset link." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ ok: true, message: "Password reset successfully." });
   } catch (error) {
-    res.status(400).json({ ok: false, error: error.message });
+    res.status(500).json({ ok: false, error: error.message });
   }
 };
 export const logout = async (req, res) => {

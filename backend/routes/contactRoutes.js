@@ -6,7 +6,7 @@ import {
   destroy,
 } from "../controller/contactController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
-import { validateContact } from "../middleware/validate.js";
+import { validateContact, validateMongoId } from "../middleware/validate.js";
 import { contactLimiter } from "../middleware/rateLimiter.js";
 const contactRoutes = express.Router();
 
@@ -21,10 +21,11 @@ contactRoutes.post(
 contactRoutes.put(
   "/update/:id",
   verifyToken,
+  validateMongoId,
   validateContact,
   contactLimiter,
   update,
 );
-contactRoutes.delete("/delete/:id", verifyToken, destroy);
+contactRoutes.delete("/delete/:id", verifyToken, validateMongoId, destroy);
 
 export default contactRoutes;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { generateInterviewPrep } from "@/api/ai";
 
 const TYPE_COLORS = {
@@ -35,9 +35,6 @@ export default function InterviewPrep({ job }) {
     <div className="flex flex-col gap-4">
       {!prep ? (
         <div className="flex flex-col items-center gap-4 py-8">
-          <div className="w-12 h-12 rounded-full bg-[#F0A500]/10 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-[#F0A500]" />
-          </div>
           <div className="text-center">
             <p className="text-white text-[14px] mb-1">AI Interview Prep</p>
             <p className="text-[#6E7681] text-[12px]">
@@ -51,7 +48,6 @@ export default function InterviewPrep({ job }) {
             disabled={isLoading}
             className="flex items-center gap-2 bg-[#F0A500] text-[#0D1117] px-6 py-2.5 rounded-lg text-[13px] hover:opacity-90 disabled:opacity-50"
           >
-            <Sparkles className="w-4 h-4" />
             {isLoading ? "Generating..." : "Generate Interview Prep"}
           </button>
         </div>
@@ -114,7 +110,6 @@ export default function InterviewPrep({ job }) {
             disabled={isLoading}
             className="flex items-center justify-center gap-2 border border-white/10 text-[#6E7681] py-2 rounded-lg text-[13px] hover:text-white hover:border-white/20 transition-colors disabled:opacity-50"
           >
-            <Sparkles className="w-4 h-4" />
             {isLoading ? "Regenerating..." : "Regenerate"}
           </button>
         </div>

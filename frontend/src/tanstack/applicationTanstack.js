@@ -32,6 +32,7 @@ export const updateMutate = () => {
       if (response.ok) {
         toast.success(response.message);
         queryClient.invalidateQueries(["applications"]);
+        queryClient.invalidateQueries(["user"]);
       } else {
         toast.error(response.message);
       }

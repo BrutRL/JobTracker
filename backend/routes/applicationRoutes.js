@@ -1,5 +1,4 @@
 import express from "express";
-import multer from "multer";
 import {
   all,
   create,
@@ -8,7 +7,11 @@ import {
   updateStatus,
 } from "../controller/applicationController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
-import { validateApplication } from "../middleware/validate.js";
+import {
+  validateApplication,
+  validateMongoId,
+  validateStatusUpdate,
+} from "../middleware/validate.js";
 import {
   applicationLimiter,
   updateApplicationLimiter,
@@ -28,12 +31,19 @@ applicationRoutes.post(
 applicationRoutes.put(
   "/update/:id",
   verifyToken,
+  validateMongoId,
   uploadResume.single("resumePath"),
   validateApplication,
   updateApplicationLimiter,
   update,
 );
-applicationRoutes.patch("/status/:id", verifyToken, updateStatus);
-applicationRoutes.delete("/delete/:id", verifyToken, destroy);
+applicationRoutes.patch(
+  "/status/:id",
+  verifyToken,
+  validateMongoId,
+  validateStatusUpdate,
+  updateStatus,
+);
+applicationRoutes.delete("/delete/:id", verifyToken, validateMongoId, destroy);
 
 export default applicationRoutes;

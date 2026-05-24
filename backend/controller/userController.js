@@ -14,18 +14,23 @@ export const specific = async (req, res) => {
 };
 export const update = async (req, res) => {
   try {
-    const { name, email, password, emailReminders } = req.body;
+    const { name, email, password, emailReminders, skills } = req.body;
 
     const updateFields = {};
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
     if (emailReminders !== undefined)
       updateFields.emailReminders = emailReminders;
-
-    // only update avatar if a file was uploaded
     if (req.file) updateFields.avatar = req.file.filename;
+    if (skills !== undefined) {
+      updateFields.skills = Array.isArray(skills)
+        ? skills
+        : skills
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+    }
 
-    // only update password if provided
     if (password) {
       const hashPassword = await bcrypt.hash(password, 10);
       updateFields.password = hashPassword;

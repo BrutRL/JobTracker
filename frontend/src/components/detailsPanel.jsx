@@ -4,6 +4,7 @@ import InterviewDetails from "./interviewDetails";
 import Contact from "./contact";
 import { allQuery } from "@/tanstack/interviewTanstack";
 import EditApplicationPanel from "./editApplication";
+import JobAnalyzer from "./jobAnalyzer";
 const STATUS_COLORS = {
   wishlist: "#6E7681",
   applied: "#4A90D9",
@@ -16,7 +17,7 @@ export function DetailPanel({ job, onClose, onUpdateJob }) {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: interviewData } = allQuery(job?._id);
   const [isEditing, setIsEditing] = useState(false);
-  const tabs = ["Overview", "Interview", "Contacts", "Notes"];
+  const tabs = ["Overview", "Interview", "Contacts", "Notes", "Analyzer"];
   if (isEditing) {
     return (
       <EditApplicationPanel
@@ -48,7 +49,7 @@ export function DetailPanel({ job, onClose, onUpdateJob }) {
           <button
             key={tab}
             onClick={() => setActiveTab(tab.toLowerCase())}
-            className={`px-4 py-3 text-[13px] transition-colors border-b-2 ${
+            className={`px-3 lg:px-2 py-3 text-[13px] transition-colors border-b-2 ${
               activeTab === tab.toLowerCase()
                 ? "border-[#F0A500] text-white"
                 : "border-transparent text-[#6E7681] hover:text-white"
@@ -232,6 +233,7 @@ export function DetailPanel({ job, onClose, onUpdateJob }) {
             </p>
           </div>
         )}
+        {activeTab === "analyzer" && <JobAnalyzer job={job} />}
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ userRoutes.put(
   verifyToken,
   uploadAvatar.single("avatarPath"),
   profileUpdateLimiter,
-  // validateProfileUpdate,
+  validateProfileUpdate,
   update,
 );
 userRoutes.patch("/email_reminder", verifyToken, updateEmailReminder);

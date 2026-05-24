@@ -1,5 +1,10 @@
 import { Interview } from "../model/interviewModel.js";
 import { Application } from "../model/applicationModel.js";
+
+const getOwnedInterview = async (req, id) => {
+  return Interview.findOne({ _id: id, userId: req.userId });
+};
+
 export const all = async (req, res) => {
   const { id } = req.params;
   try {
@@ -49,6 +54,23 @@ export const update = async (req, res) => {
   const { applicationId, round, scheduledAt, format, notes, outcome } =
     req.body;
   try {
+    const interview = await getOwnedInterview(req, id);
+    if (!interview) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Interview not found" });
+    }
+
+    const application = await Application.findOne({
+      _id: applicationId,
+      userId: req.userId,
+    });
+    if (!application) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Application not found" });
+    }
+
     await Interview.findByIdAndUpdate(
       id,
       {
@@ -75,6 +97,13 @@ export const update = async (req, res) => {
 export const destroy = async (req, res) => {
   const { id } = req.params;
   try {
+    const interview = await getOwnedInterview(req, id);
+    if (!interview) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Interview not found" });
+    }
+
     await Interview.findByIdAndDelete(id);
     res
       .status(200)

@@ -46,15 +46,15 @@ export const request_reset_pass = async (body) => {
   }
 };
 
-export const reset_pass = async (body, id) => {
+export const reset_pass = async ({ password, token }) => {
   try {
-    const response = await fetch(`${url}/auth/reset_pass/${id}`, {
-      method: "PUT",
+    const response = await fetch(`${url}/auth/reset_pass`, {
+      method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ password, token }),
       credentials: "include",
     });
     return await response.json();

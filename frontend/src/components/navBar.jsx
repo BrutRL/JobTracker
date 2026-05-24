@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Flame } from "lucide-react";
 import { useAuth } from "@/context/userInfoContext";
 import { logoutMutate } from "@/tanstack/authTanstack";
 export function Navbar({ onAddJob }) {
@@ -24,15 +25,6 @@ export function Navbar({ onAddJob }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2)
-    : "??";
 
   const navItems = [
     { label: "Board", path: "/user/board", icon: LayoutGrid },
@@ -64,25 +56,32 @@ export function Navbar({ onAddJob }) {
           <div className="text-[#F0A500] font-mono text-[16px]">JobQuest</div>
         </div>
 
-        {/* Center: Desktop nav */}
-        {/* <div className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
-          {navItems.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => handleNav(item.path)}
-              className={`text-[14px] transition-colors ${
-                location.pathname === item.path
-                  ? "text-white"
-                  : "text-[#6E7681] hover:text-white"
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div> */}
-
         {/* Right: Add Job + Profile */}
         <div className="flex items-center gap-2 ml-auto">
+          <div
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg"
+            style={{
+              backgroundColor:
+                user?.streak?.current > 0 ? "#F0A50015" : "#21262D",
+            }}
+            title={`🔥 ${user?.streak?.current || 0} day streak · Longest: ${user?.streak?.longest || 0} days`}
+          >
+            <Flame
+              className="w-4 h-4"
+              style={{
+                color: user?.streak?.current > 0 ? "#F0A500" : "#6E7681",
+              }}
+            />
+            <span
+              className="text-[13px]"
+              style={{
+                color: user?.streak?.current > 0 ? "#F0A500" : "#6E7681",
+                fontFamily: "Geist Mono",
+              }}
+            >
+              {user?.streak?.current || 0}
+            </span>
+          </div>
           <button
             onClick={onAddJob}
             className="bg-[#F0A500] hover:bg-[#F0A500]/90 text-[#0D1117] h-9 w-9 md:w-auto md:px-4 rounded-lg flex items-center justify-center gap-2 cursor-pointer"

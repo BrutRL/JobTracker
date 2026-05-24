@@ -1,5 +1,10 @@
 import { analytics } from "googleapis/build/src/apis/analytics/index.js";
 import { Application } from "../model/applicationModel.js";
+import { User } from "../model/userModel.js";
+
+const getOwnedApplication = async (req, id) => {
+  return Application.findOne({ _id: id, userId: req.userId });
+};
 
 export const all = async (req, res) => {
   try {
@@ -38,6 +43,27 @@ export const create = async (req, res) => {
   });
 
   await application.save();
+  const user = await User.findById(req.userId);
+  const now = new Date();
+  const last = user.streak?.lastAppliedAt;
+
+  if (!last) {
+    user.streak = { current: 1, longest: 1, lastAppliedAt: now };
+  } else {
+    const diffDays = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+    } else if (diffDays === 1) {
+      user.streak.current += 1;
+      user.streak.longest = Math.max(user.streak.current, user.streak.longest);
+      user.streak.lastAppliedAt = now;
+    } else {
+      user.streak.current = 1;
+      user.streak.lastAppliedAt = now;
+    }
+  }
+
+  await user.save();
   res
     .status(201)
     .json({ ok: true, message: `Application Created Successfully` });
@@ -61,6 +87,13 @@ export const update = async (req, res) => {
       notes,
       tags,
     } = req.body;
+
+    const application = await getOwnedApplication(req, id);
+    if (!application) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Application not found" });
+    }
 
     const updateFields = {};
     if (company) updateFields.company = company;
@@ -87,9 +120,14 @@ export const updateStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   try {
-    const application = await Application.findByIdAndUpdate(id, {
-      status: status,
-    });
+    const application = await getOwnedApplication(req, id);
+    if (!application) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Application not found" });
+    }
+
+    await Application.findByIdAndUpdate(id, { status: status });
     res
       .status(200)
       .json({ ok: true, message: `Application Status Updated Successfully` });
@@ -97,9 +135,17 @@ export const updateStatus = async (req, res) => {
     res.status(400).json({ ok: false, error: error.message });
   }
 };
+
 export const destroy = async (req, res) => {
   const { id } = req.params;
   try {
+    const application = await getOwnedApplication(req, id);
+    if (!application) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Application not found" });
+    }
+
     await Application.findByIdAndDelete(id);
     res
       .status(200)

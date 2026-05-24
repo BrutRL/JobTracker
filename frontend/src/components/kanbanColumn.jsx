@@ -45,6 +45,7 @@ export function KanbanColumn({
             job={job}
             onClick={() => onJobClick(job)}
             isToday={job.appliedDate === today}
+            onStatusChange={onDrop}
           />
         ))}
       </div>

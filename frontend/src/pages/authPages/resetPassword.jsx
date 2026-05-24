@@ -11,7 +11,7 @@ export default function ResetPass() {
   const [showPass, setShowPass] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [searchParams] = useSearchParams();
-  const userId = searchParams.get("id");
+  const token = searchParams.get("token");
   const resetPass = resetPassMutate();
 
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ export default function ResetPass() {
     if (formData.password != formData.confirm_password) {
       return toast.error(`Password dont match`);
     }
-    resetPass.mutate({ data: formData, id: userId });
+    resetPass.mutate({ password: formData.password, token });
   };
 
   return (

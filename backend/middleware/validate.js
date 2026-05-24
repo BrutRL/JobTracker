@@ -59,9 +59,35 @@ export const validateLogin = (req, res, next) => {
   }
 };
 
+const mongoIdRegex = /^[a-f\d]{24}$/i;
+const validStatuses = ["wishlist", "applied", "interview", "offer", "rejected"];
+const validReminderTypes = ["follow-up", "interview"];
+
+export const validateMongoId = (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || !mongoIdRegex.test(id)) {
+      return res.status(400).json({ ok: false, message: "Invalid ID" });
+    }
+
+    next();
+  } catch (error) {
+    res.status(400).json({ ok: false, message: "Something went wrong" });
+    console.log(error);
+  }
+};
+
 export const validateResetPass = (req, res, next) => {
   try {
-    const { password } = req.body;
+    const { token, password } = req.body;
+
+    if (!token) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Reset token is required." });
+    }
+
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -71,9 +97,10 @@ export const validateResetPass = (req, res, next) => {
           "Password must be at least 8 chars, include uppercase, lowercase, number, and special character",
       });
     }
+
     next();
   } catch (error) {
-    res.status(400).json({ ok: false, message: `Something went wrong` });
+    res.status(400).json({ ok: false, message: "Something went wrong" });
     console.log(error);
   }
 };
@@ -83,14 +110,6 @@ export const validateApplication = (req, res, next) => {
     const { company, role, status, jobUrl, salaryMin, salaryMax } = req.body;
 
     const urlRegex = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-./?%&=]*)?$/;
-
-    const validStatuses = [
-      "wishlist",
-      "applied",
-      "interview",
-      "offer",
-      "rejected",
-    ];
 
     if (!company || !role) {
       return res
@@ -155,6 +174,24 @@ export const validateApplication = (req, res, next) => {
     console.log(error);
   }
 };
+
+export const validateStatusUpdate = (req, res, next) => {
+  try {
+    const { status } = req.body;
+
+    if (!status || !validStatuses.includes(status)) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Invalid status value" });
+    }
+
+    next();
+  } catch (error) {
+    res.status(400).json({ ok: false, message: "Something went wrong" });
+    console.log(error);
+  }
+};
+
 export const validateContact = (req, res, next) => {
   try {
     const { applicationId, name, email, linkedIn } = req.body;
@@ -273,6 +310,44 @@ export const validateInterview = (req, res, next) => {
     console.log(error);
   }
 };
+
+export const validateReminder = (req, res, next) => {
+  try {
+    const { applicationId, type, triggerAt } = req.body;
+    const parsedTrigger = new Date(triggerAt);
+
+    if (!applicationId || !mongoIdRegex.test(applicationId)) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Invalid application ID" });
+    }
+
+    if (!type || !validReminderTypes.includes(type)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Reminder type must be one of: follow-up, interview",
+      });
+    }
+
+    if (!triggerAt || isNaN(parsedTrigger.getTime())) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Trigger date must be a valid date" });
+    }
+
+    if (parsedTrigger <= new Date()) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Trigger date must be in the future" });
+    }
+
+    next();
+  } catch (error) {
+    res.status(400).json({ ok: false, message: "Something went wrong" });
+    console.log(error);
+  }
+};
+
 export const validateProfileUpdate = (req, res, next) => {
   try {
     const { name, email, password } = req.body;

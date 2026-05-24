@@ -30,8 +30,8 @@ const authRoutes = express.Router();
 
 authRoutes.post("/login", validateLogin, loginLimiter, login);
 authRoutes.post("/request_reset_pass", resetEmailLimiter, requestPasswordReset);
-authRoutes.put(
-  "/reset_pass/:id",
+authRoutes.post(
+  "/reset_pass",
   validateResetPass,
   resetPassLimiter,
   resetPassword,

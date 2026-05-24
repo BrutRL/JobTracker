@@ -12,6 +12,7 @@ import { useAuth } from "@/context/userInfoContext";
 import { remindersUpdateMutate } from "@/tanstack/userTanstack";
 import { Spinner } from "@/components/ui/spinner";
 import ReminderDeleteModal from "@/components/modal/reminderDeleteModal";
+
 const TYPE_COLORS = {
   "follow-up": { bg: "#4A90D920", color: "#4A90D9" },
   interview: { bg: "#F0A50020", color: "#F0A500" },
@@ -46,15 +47,26 @@ export default function Reminder() {
 
   const handleCreate = (e) => {
     e.preventDefault();
-    createReminder.mutate(form, {
-      onSuccess: (res) => {
-        if (res.ok) {
-          setShowModal(false);
-          setForm({ applicationId: "", type: "follow-up", triggerAt: "" });
-        }
+
+    // Ensure full "YYYY-MM-DDTHH:mm:ss" so JS parses it as LOCAL time (not UTC)
+    const fullLocal =
+      form.triggerAt.length === 16 ? `${form.triggerAt}:00` : form.triggerAt;
+
+    const utcIsoString = new Date(fullLocal).toISOString();
+
+    createReminder.mutate(
+      { ...form, triggerAt: utcIsoString },
+      {
+        onSuccess: (res) => {
+          if (res.ok) {
+            setShowModal(false);
+            setForm({ applicationId: "", type: "follow-up", triggerAt: "" });
+          }
+        },
       },
-    });
+    );
   };
+
   const handleDelete = () => {
     deleteReminder.mutate(deleteId, {
       onSuccess: () => setShowDelete(false),
@@ -105,7 +117,7 @@ export default function Reminder() {
                     <p className="text-[#6E7681] text-[12px]">
                       {reminder.applicationId?.role}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
                       <span
                         className="text-[11px] px-2 py-0.5 rounded-full capitalize"
                         style={{
@@ -131,7 +143,7 @@ export default function Reminder() {
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => dismissReminder.mutate(reminder._id)}
                     className="cursor-pointer text-[#6E7681] hover:text-white text-[11px] px-2 py-1 rounded bg-[#21262D]"
@@ -182,7 +194,11 @@ export default function Reminder() {
                       <span className="text-[#6E7681] text-[11px]">
                         {new Date(reminder.triggerAt).toLocaleDateString(
                           "en-US",
-                          { month: "short", day: "numeric", year: "numeric" },
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          },
                         )}
                       </span>
                     </div>
@@ -193,7 +209,7 @@ export default function Reminder() {
                     setDeleteId(reminder._id);
                     setShowDelete(true);
                   }}
-                  className="text-[#E05C6B] opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity  hover:text-red-500 "
+                  className="text-[#E05C6B] lg:opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity hover:text-red-500"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -220,6 +236,7 @@ export default function Reminder() {
         </div>
       </div>
 
+      {/* add reminder modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <form

@@ -1,5 +1,10 @@
 import { Contact } from "../model/contactModel.js";
 import { Application } from "../model/applicationModel.js";
+
+const getOwnedContact = async (req, id) => {
+  return Contact.findOne({ _id: id, userId: req.userId });
+};
+
 export const specific = async (req, res) => {
   const { id } = req.params;
   try {
@@ -45,6 +50,21 @@ export const update = async (req, res) => {
   const { id } = req.params;
   const { applicationId, name, role, email, linkedIn, notes } = req.body;
   try {
+    const contact = await getOwnedContact(req, id);
+    if (!contact) {
+      return res.status(404).json({ ok: false, message: "Contact not found" });
+    }
+
+    const application = await Application.findOne({
+      _id: applicationId,
+      userId: req.userId,
+    });
+    if (!application) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Application not found" });
+    }
+
     await Contact.findByIdAndUpdate(
       id,
       {
@@ -69,6 +89,11 @@ export const update = async (req, res) => {
 export const destroy = async (req, res) => {
   const { id } = req.params;
   try {
+    const contact = await getOwnedContact(req, id);
+    if (!contact) {
+      return res.status(404).json({ ok: false, message: "Contact not found" });
+    }
+
     await Contact.findByIdAndDelete(id);
     res.status(200).json({ ok: true, message: `Contact Deleted Successfully` });
   } catch (error) {

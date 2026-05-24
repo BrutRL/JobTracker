@@ -25,6 +25,17 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    streak: {
+      current: { type: Number, default: 0 },
+      longest: { type: Number, default: 0 },
+      lastAppliedAt: { type: Date, default: null },
+    },
+    resetToken: { type: String },
+    resetTokenExpiry: { type: Date },
   },
   { timestamps: true },
 );

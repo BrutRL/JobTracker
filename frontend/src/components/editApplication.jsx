@@ -170,7 +170,7 @@ export default function EditApplicationPanel({ job, onClose, onUpdate }) {
 
         <div>
           <label className="text-[#6E7681] text-[12px] mb-1 block">
-            Website
+            Job URL
           </label>
           <input
             name="jobUrl"
@@ -182,7 +182,9 @@ export default function EditApplicationPanel({ job, onClose, onUpdate }) {
         </div>
 
         <div>
-          <label className="text-[#6E7681] text-[12px] mb-1 block">Tags</label>
+          <label className="text-[#6E7681] text-[12px] mb-1 block">
+            Skills Needed
+          </label>
           <input
             name="tags"
             value={form.tags}

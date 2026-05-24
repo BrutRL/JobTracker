@@ -52,9 +52,8 @@ export const googleRegisterCallback = async (req, res) => {
 
     const existing = await User.findOne({ email: data.email });
     if (existing) {
-      return res.send("Already registered");
+      return res.redirect(`${process.env.FRONT_END_URL}/user`);
     }
-
     // download google avatar and save to ./public/avatar
     const avatarResponse = await fetch(data.picture);
     const arrayBuffer = await avatarResponse.arrayBuffer();

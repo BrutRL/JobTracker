@@ -226,6 +226,7 @@ function Profile() {
         open={showDelete}
         onCancel={() => setShowDelete(false)}
         onConfirm={deleteFn}
+        isPending={destroy.isPending}
       />
     </div>
   );

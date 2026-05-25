@@ -197,9 +197,11 @@ export default function Contact({ application }) {
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-[#F0A500] text-[#0D1117] py-2 rounded-lg text-[13px] hover:opacity-90"
+                disabled={create.isPending}
+                className="flex flex-1 justify-center items-center bg-[#F0A500] text-[#0D1117] py-2 rounded-lg cursor-pointer text-[13px] transition-colors hover:bg-[#F0A500]/90 disabled:bg-[#F0A500]/50 disabled:text-[#0D1117]/50 
+             disabled:cursor-not-allowed "
               >
-                Save
+                {create.isPending ? <Spinner /> : "Save"}
               </button>
             </div>
           </form>
@@ -309,9 +311,11 @@ export default function Contact({ application }) {
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-[#F0A500] text-[#0D1117] py-2 rounded-lg text-[13px] hover:opacity-90"
+                disabled={update.isPending}
+                className="flex flex-1 justify-center items-center bg-[#F0A500] text-[#0D1117] py-2 rounded-lg cursor-pointer text-[13px] transition-colors hover:bg-[#F0A500]/90 disabled:bg-[#F0A500]/50 disabled:text-[#0D1117]/50 
+             disabled:cursor-not-allowed "
               >
-                Save
+                {update.isPending ? <Spinner /> : "Save"}
               </button>
             </div>
           </form>

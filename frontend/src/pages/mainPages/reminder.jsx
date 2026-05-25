@@ -209,7 +209,7 @@ export default function Reminder() {
                     setDeleteId(reminder._id);
                     setShowDelete(true);
                   }}
-                  className="text-[#E05C6B] lg:opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity hover:text-red-500"
+                  className="text-[#E05C6B] flex justify-center items-center lg:opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity hover:text-red-500"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -350,6 +350,7 @@ export default function Reminder() {
         open={showDelete}
         onCancel={() => setShowDelete(false)}
         onConfirm={handleDelete}
+        isPending={deleteReminder.isPending}
       />
     </div>
   );

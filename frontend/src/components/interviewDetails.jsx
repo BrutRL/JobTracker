@@ -79,7 +79,11 @@ export default function InterviewDetails({ job }) {
     );
   };
   const deleteFn = (id) => {
-    destroy.mutate(id);
+    destroy.mutate(id, {
+      onSuccess: () => {
+        setShowDelete(false);
+      },
+    });
   };
 
   return (
@@ -287,8 +291,8 @@ export default function InterviewDetails({ job }) {
         onCancel={() => setShowDelete(false)}
         onConfirm={() => {
           deleteFn(deleteId);
-          setShowDelete(false);
         }}
+        isPending={destroy.isPending}
       />
       <InterviewUpdateModal
         open={showUpdate}

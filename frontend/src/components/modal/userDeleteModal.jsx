@@ -1,5 +1,10 @@
 import { Spinner } from "../ui/spinner";
-export default function UserDeleteModal({ open, onCancel, onConfirm }) {
+export default function UserDeleteModal({
+  open,
+  onCancel,
+  onConfirm,
+  isPending,
+}) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
@@ -20,11 +25,11 @@ export default function UserDeleteModal({ open, onCancel, onConfirm }) {
           </button>
           <button
             onClick={onConfirm}
-            disabled={onConfirm.isPending}
-            className="px-4 py-2 rounded-lg flex justify-center items-center cursor-pointer bg-red-500 text-white text-[13px] hover:bg-red-600/90 transition-colors disabled:bg-[#F0A500]/50 disabled:text-[#0D1117]/50 
+            disabled={isPending}
+            className="px-4 py-2 rounded-lg flex justify-center items-center cursor-pointer bg-red-500 text-white text-[13px] hover:bg-red-600/90 transition-colors disabled:bg-red-500/50 disabled:text-[#0D1117]/50 
              disabled:cursor-not-allowed"
           >
-            {onConfirm.isPending ? <Spinner /> : "Delete"}
+            {isPending ? <Spinner /> : "Delete"}
           </button>
         </div>
       </div>

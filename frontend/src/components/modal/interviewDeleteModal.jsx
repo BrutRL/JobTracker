@@ -1,5 +1,10 @@
 import { Spinner } from "../ui/spinner";
-export default function InterviewDeleteModal({ open, onCancel, onConfirm }) {
+export default function InterviewDeleteModal({
+  open,
+  onCancel,
+  onConfirm,
+  isPending,
+}) {
   if (!open) return null;
 
   return (
@@ -21,11 +26,10 @@ export default function InterviewDeleteModal({ open, onCancel, onConfirm }) {
           </button>
           <button
             onClick={onConfirm}
-            disabled={onConfirm.isPending}
-            className="px-4 py-2 rounded-lg flex justify-center items-center cursor-pointer bg-red-500 text-white text-[13px] hover:bg-red-600/90 transition-colors disabled:bg-[#F0A500]/50 disabled:text-[#0D1117]/50 
-             disabled:cursor-not-allowed"
+            disabled={isPending}
+            class="px-4 py-2 rounded-lg flex justify-center items-center cursor-pointer bg-red-600 text-white text-[13px] hover:bg-red-700/90 transition-colors disabled:bg-red-500/50 disabled:text-white/50 disabled:cursor-not-allowed"
           >
-            {onConfirm.isPending ? <Spinner /> : "Delete"}
+            {isPending ? <Spinner /> : "Delete"}
           </button>
         </div>
       </div>

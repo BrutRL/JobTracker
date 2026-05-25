@@ -6,7 +6,7 @@ import { MongoBackend } from "@agendajs/mongo-backend";
 const agenda = new Agenda({
   backend: new MongoBackend({
     address: process.env.MONGO_URL,
-    collection: "agendaJobs", // rename from "jobs" to avoid conflicts
+    collection: "agendaJobs",
   }),
   processEvery: "30 seconds", // increase from 10s to reduce DB load
   maxConcurrency: 5,

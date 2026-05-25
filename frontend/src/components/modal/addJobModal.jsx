@@ -122,6 +122,7 @@ export function AddJobModal({ open, onOpenChange }) {
                 value={formData.location}
                 onChange={handleChange}
                 name="location"
+                required
                 placeholder="City, Country"
                 className="bg-[#21262D] border-none text-white"
               />
@@ -139,6 +140,7 @@ export function AddJobModal({ open, onOpenChange }) {
                 value={formData.salaryMin}
                 onChange={handleChange}
                 placeholder="35000"
+                required
                 className="bg-[#21262D] border-none text-white"
               />
             </div>
@@ -152,6 +154,7 @@ export function AddJobModal({ open, onOpenChange }) {
                 value={formData.salaryMax}
                 onChange={handleChange}
                 placeholder="55000"
+                required
                 className="bg-[#21262D] border-none text-white"
               />
             </div>
@@ -167,6 +170,7 @@ export function AddJobModal({ open, onOpenChange }) {
               value={formData.jobUrl}
               onChange={handleChange}
               placeholder="https://..."
+              required
               className="bg-[#21262D] border-none text-white"
             />
           </div>
@@ -195,6 +199,7 @@ export function AddJobModal({ open, onOpenChange }) {
               onChange={handleChange}
               placeholder="React, TypeScript, Remote"
               className="bg-[#21262D] border-none text-white"
+              required
             />
           </div>
 

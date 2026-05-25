@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
 import { resend } from "../middleware/nodemailer.js";
-import { transporter } from "../middleware/nodemailer.js";
+
 import crypto from "crypto";
 import getOauthClient from "../config/googleClient.js";
 import bcrypt from "bcrypt";

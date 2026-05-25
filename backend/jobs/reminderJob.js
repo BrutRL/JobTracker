@@ -3,7 +3,7 @@ dotenv.config();
 import { Reminder } from "../model/reminderModel.js";
 import { User } from "../model/userModel.js";
 import { Application } from "../model/applicationModel.js";
-import { transporter } from "../middleware/nodemailer.js";
+import { resend } from "../middleware/nodemailer.js";
 
 export function registerJobs(agenda) {
   agenda.define("send reminder", async (job) => {
@@ -31,9 +31,8 @@ export function registerJobs(agenda) {
         return;
       }
 
-      console.log("Attempting to send email to:", user.email);
-      await transporter.sendMail({
-        from: `"JobQuest" <${process.env.EMAIL_USER}>`,
+      await resend.emails.send({
+        from: "JobQuest <onboarding@resend.dev>",
         to: user.email,
         subject: `Reminder Job Application for: ${app.company} — ${app.role}`,
         html: `
@@ -70,9 +69,9 @@ export function registerJobs(agenda) {
                           <td style="font-size:14px; color:#8B949E;">Type</td>
                           <td style="font-size:14px; color:#E6EDF3;">${reminder.type}</td>
                         </tr>
-                          <tr>
+                        <tr>
                           <td style="font-size:14px; color:#8B949E;">Scheduled</td>
-                         <td style="font-size:14px; color:#E6EDF3;">
+                          <td style="font-size:14px; color:#E6EDF3;">
                             ${reminder.triggerAt.toLocaleString("en-US", {
                               month: "short",
                               day: "numeric",
@@ -82,7 +81,6 @@ export function registerJobs(agenda) {
                               hour12: true,
                             })}
                           </td>
-
                         </tr>
                       </table>
                       <div style="text-align:center; margin:30px 0;">

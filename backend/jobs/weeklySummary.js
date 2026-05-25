@@ -1,7 +1,7 @@
 import { User } from "../model/userModel.js";
 import { Application } from "../model/applicationModel.js";
 import { Interview } from "../model/interviewModel.js";
-import { transporter } from "../middleware/nodemailer.js";
+import { resend } from "../middleware/nodemailer.js";
 import { MOTIVATIONAL_MESSAGES } from "../utils/MOTIVATIONAL_MESSAGES.js";
 
 export function weeklySummary(agenda) {
@@ -44,8 +44,8 @@ export function weeklySummary(agenda) {
           rejected: "#E05C6B",
         };
 
-        await transporter.sendMail({
-          from: `"JobQuest" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+          from: "JobQuest <onboarding@resend.dev>",
           to: user.email,
           subject: `Your Weekly Job Search Summary Report`,
           html: `
@@ -53,23 +53,17 @@ export function weeklySummary(agenda) {
               <tr>
                 <td align="center">
                   <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#161B22; padding:30px; border-radius:8px; font-family:Arial, sans-serif; color:#E6EDF3;">
-                    
-                    <!-- header -->
                     <tr>
                       <td style="padding-bottom:20px; border-bottom:1px solid #21262D;">
                         <h2 style="color:#F0A500; margin:0; font-family:monospace;">JobQuest</h2>
                         <p style="color:#6E7681; font-size:13px; margin:4px 0 0 0;">Weekly Job Application Summary · ${now.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
                       </td>
                     </tr>
-
-                    <!-- greeting -->
                     <tr>
                       <td style="padding:20px 0 0 0;">
                         <p style="font-size:16px; margin:0 0 20px 0;">Hi <strong>${user.name}</strong>, here's your weekly job search summary</p>
                       </td>
                     </tr>
-
-                    <!-- stats row -->
                     <tr>
                       <td style="padding-bottom:24px;">
                         <table width="100%" cellpadding="0" cellspacing="0">
@@ -92,8 +86,6 @@ export function weeklySummary(agenda) {
                         </table>
                       </td>
                     </tr>
-
-                    <!-- applied this week -->
                     ${
                       weeklyApps.length > 0
                         ? `
@@ -122,8 +114,6 @@ export function weeklySummary(agenda) {
                     `
                         : ""
                     }
-
-                    <!-- follow up needed -->
                     ${
                       followUpApps.length > 0
                         ? `
@@ -154,8 +144,6 @@ export function weeklySummary(agenda) {
                     `
                         : ""
                     }
-
-                    <!-- upcoming interviews -->
                     ${
                       upcomingInterviews.length > 0
                         ? `
@@ -186,15 +174,11 @@ export function weeklySummary(agenda) {
                     `
                         : ""
                     }
-
-                    <!-- motivation -->
                     <tr>
-                      <td style="padding:20px; background:#F0A50010; border-radius:8px; border:1px solid #F0A50030; margin-bottom:24px;">
+                      <td style="padding:20px; background:#F0A50010; border-radius:8px; border:1px solid #F0A50030;">
                         <p style="color:#F0A500; font-size:13px; margin:0; font-style:italic;">"${motivation}"</p>
                       </td>
                     </tr>
-
-                    <!-- cta -->
                     <tr>
                       <td style="padding-top:24px; text-align:center;">
                         <a href="${process.env.FRONT_END_URL}/user/board"
@@ -203,17 +187,14 @@ export function weeklySummary(agenda) {
                         </a>
                       </td>
                     </tr>
-
-                    <!-- footer -->
                     <tr>
-                      <td style="padding-top:24px; border-top:1px solid #21262D; margin-top:24px;">
+                      <td style="padding-top:24px; border-top:1px solid #21262D;">
                         <p style="font-size:12px; color:#6E7681; margin:0; text-align:center;">
                           You're receiving this because you have email reminders enabled.<br/>
                           <a href="${process.env.FRONT_END_URL}/user/reminders" style="color:#F0A500;">Manage preferences</a>
                         </p>
                       </td>
                     </tr>
-
                   </table>
                 </td>
               </tr>
@@ -221,7 +202,7 @@ export function weeklySummary(agenda) {
           `,
         });
 
-        console.log(`Weekly Summary Successfully sent`);
+        console.log(`Weekly Summary Successfully sent to ${user.email}`);
       }
     } catch (error) {
       console.error("Weekly Summary error:", error);

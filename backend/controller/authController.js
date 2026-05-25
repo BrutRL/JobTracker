@@ -5,7 +5,7 @@ import { google } from "googleapis";
 import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
-
+import { resend } from "../middleware/nodemailer.js";
 import { transporter } from "../middleware/nodemailer.js";
 import crypto from "crypto";
 import getOauthClient from "../config/googleClient.js";
@@ -197,47 +197,47 @@ export const requestPasswordReset = async (req, res) => {
       await user.save();
 
       const resetUrl = `${process.env.FRONT_END_URL}/reset_pass?token=${token}`;
-      await transporter.sendMail({
-        from: `"JobQuest" <${process.env.EMAIL_USER}>`,
+      await resend.emails.send({
+        from: "JobQuest <onboarding@resend.dev>",
         to: user.email,
         subject: "Reset Your Password - JobQuest",
         html: `
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0D1117; padding:20px;">
-          <tr>
-            <td align="center">
-              <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#161B22; padding:30px; border-radius:8px; font-family:Arial, sans-serif; color:#E6EDF3;">
-                <tr>
-                  <td align="center" style="padding-bottom:20px;">
-                    <h2 style="color:#F0A500; margin:0; font-family:monospace;">JobQuest</h2>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <p style="font-size:16px; margin:0 0 15px 0;">Hi <strong>${user.name}</strong>,</p>
-                    <p style="font-size:16px; margin:0 0 20px 0;">
-                      We received a request to reset your password. Click the button below to proceed:
-                    </p>
-                    <div style="text-align:center; margin:30px 0;">
-                    <a href="${resetUrl}"
-                         style="background-color:#F0A500; color:#0D1117; padding:12px 24px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block;">
-                        Reset My Password
-                      </a>
-                    </div>
-                    <p style="font-size:14px; color:#8B949E;">
-                      If you did not request this, ignore this email — your account is safe.
-                    </p>
-                    <hr style="border:none; border-top:1px solid #21262D; margin:30px 0;">
-                    <p style="font-size:14px; color:#8B949E; margin:0;">
-                      Best regards,<br>
-                      <strong style="color:#F0A500;">JobQuest Team</strong>
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      `,
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0D1117; padding:20px;">
+      <tr>
+        <td align="center">
+          <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#161B22; padding:30px; border-radius:8px; font-family:Arial, sans-serif; color:#E6EDF3;">
+            <tr>
+              <td align="center" style="padding-bottom:20px;">
+                <h2 style="color:#F0A500; margin:0; font-family:monospace;">JobQuest</h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p style="font-size:16px; margin:0 0 15px 0;">Hi <strong>${user.name}</strong>,</p>
+                <p style="font-size:16px; margin:0 0 20px 0;">
+                  We received a request to reset your password. Click the button below to proceed:
+                </p>
+                <div style="text-align:center; margin:30px 0;">
+                  <a href="${resetUrl}"
+                     style="background-color:#F0A500; color:#0D1117; padding:12px 24px; text-decoration:none; border-radius:5px; font-weight:bold; display:inline-block;">
+                    Reset My Password
+                  </a>
+                </div>
+                <p style="font-size:14px; color:#8B949E;">
+                  If you did not request this, ignore this email — your account is safe.
+                </p>
+                <hr style="border:none; border-top:1px solid #21262D; margin:30px 0;">
+                <p style="font-size:14px; color:#8B949E; margin:0;">
+                  Best regards,<br>
+                  <strong style="color:#F0A500;">JobQuest Team</strong>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  `,
       });
     }
 

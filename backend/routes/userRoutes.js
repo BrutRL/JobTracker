@@ -8,7 +8,6 @@ import { verifyToken } from "../middleware/verifyToken.js";
 import { profileUpdateLimiter } from "../middleware/rateLimiter.js";
 import express from "express";
 import { uploadAvatar } from "../middleware/avatarFileValidator.js";
-import { validateProfileUpdate } from "../middleware/validate.js";
 const userRoutes = express.Router();
 
 userRoutes.get("/specific", verifyToken, specific);
@@ -17,7 +16,6 @@ userRoutes.put(
   verifyToken,
   uploadAvatar.single("avatarPath"),
   profileUpdateLimiter,
-  validateProfileUpdate,
   update,
 );
 userRoutes.patch("/email_reminder", verifyToken, updateEmailReminder);

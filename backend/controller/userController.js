@@ -15,7 +15,8 @@ export const specific = async (req, res) => {
 export const update = async (req, res) => {
   try {
     const { name, email, password, emailReminders, skills } = req.body;
-
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     const updateFields = {};
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
@@ -30,8 +31,18 @@ export const update = async (req, res) => {
             .map((s) => s.trim())
             .filter(Boolean);
     }
-
     if (password) {
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+          ok: false,
+          message:
+            "Password must be at least 8 chars, include uppercase, lowercase, number, and special character",
+        });
+      }
+
       const hashPassword = await bcrypt.hash(password, 10);
       updateFields.password = hashPassword;
     }

@@ -85,10 +85,10 @@ const start = async () => {
         skipImmediate: true,
       },
     );
-    app.get("/test-digest", async (req, res) => {
-      await agenda.schedule("in 30 seconds", "weekly summary");
-      res.json({ ok: true });
-    });
+    // app.get("/test-digest", async (req, res) => {
+    //   await agenda.schedule("in 30 seconds", "weekly summary");
+    //   res.json({ ok: true });
+    // });
     // 5. start server LAST
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

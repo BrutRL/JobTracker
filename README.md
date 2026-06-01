@@ -93,7 +93,7 @@ It keeps you consistent with smart reminders, weekly digests, and recruiter cont
 
 Clone the repository:
 ```bash
-git clone https://github.com/yourusername/jobquest.git
+git clone https://github.com/BrutRL/jobquest.git
 cd jobquest
 ```
 
@@ -101,7 +101,7 @@ Setup backend:
 ```bash
 cd backend
 npm install
-npm run dev
+npm start
 ```
 
 Setup frontend:

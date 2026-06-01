@@ -93,7 +93,7 @@ It keeps you consistent with smart reminders, weekly digests, and recruiter cont
 
 Clone the repository:
 ```bash
-git clone https://github.com/BrutRL/jobquest.git
+git clone https://github.com/BrutRL/JobTracker.git
 cd jobquest
 ```
 
